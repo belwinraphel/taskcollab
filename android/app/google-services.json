@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "926645480265",
+    "project_id": "taskcollabapp-2f3e9",
+    "storage_bucket": "taskcollabapp-2f3e9.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:926645480265:android:b4f4c15a323bceef79c898",
+        "android_client_info": {
+          "package_name": "com.treo.taskcollabapp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA9W-cqWGB4ExrOMxcLW9pSFcRbnXPd_k4"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

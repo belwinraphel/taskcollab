@@ -1,0 +1,13 @@
+import 'package:dartz/dartz.dart';
+import '../../../../core/error/failures.dart';
+import '../entities/user.dart';
+
+abstract class AuthRepository {
+  Future<Either<Failure, UserEntity>> login(String email, String password);
+  Future<Either<Failure, UserEntity>> register(String email, String password);
+  Future<Either<Failure, void>> logout();
+  Future<Either<Failure, UserEntity?>> getCurrentUser();
+
+  Stream<UserEntity?> get authUserStream;
+  Future<Either<Failure, void>> updateFcmToken(String token);
+}
