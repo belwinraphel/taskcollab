@@ -43,7 +43,7 @@ class ProjectDashboardPage extends StatelessWidget {
                               gridDelegate:
                                   const SliverGridDelegateWithMaxCrossAxisExtent(
                                 maxCrossAxisExtent: 300,
-                                childAspectRatio: 1.2,
+                                childAspectRatio: 1,
                                 crossAxisSpacing: 16,
                                 mainAxisSpacing: 16,
                               ),

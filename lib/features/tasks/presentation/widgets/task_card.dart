@@ -62,7 +62,7 @@ class TaskCard extends StatelessWidget {
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  _buildAssignees(task.assigneeId), // Placeholder for assignees
+                  _buildAssignees(task.assignees),
                   if (task.dueDate != null) _buildTimeTag(task.dueDate!),
                 ],
               ),
@@ -113,15 +113,42 @@ class TaskCard extends StatelessWidget {
     );
   }
 
-  Widget _buildAssignees(String assigneeId) {
-    // Mock avatars for now based on assigneeId (or random if empty)
+  Widget _buildAssignees(List<TaskAssignee> assignees) {
+    if (assignees.isEmpty) return const SizedBox();
+    // Show up to 3 avatars
     return Row(
       children: [
-        _buildAvatar('JE', Colors.purple[100]!, Colors.purple),
-        const SizedBox(width: -8),
-        _buildAvatar('AS', Colors.blue[100]!, Colors.blue),
+        for (var i = 0; i < assignees.length && i < 3; i++)
+          Padding(
+            padding: const EdgeInsets.only(
+                right:
+                    4.0), // Negative margin might look better if overlapping is desired
+            child: _buildAssigneeAvatar(assignees[i]),
+          ),
       ],
     );
+  }
+
+  Widget _buildAssigneeAvatar(TaskAssignee assignee) {
+    if (assignee.avatarUrl != null) {
+      return Container(
+        width: 28,
+        height: 28,
+        decoration: BoxDecoration(
+          image: DecorationImage(image: NetworkImage(assignee.avatarUrl!)),
+          shape: BoxShape.circle,
+          border: Border.all(color: Colors.white, width: 2),
+        ),
+      );
+    }
+
+    final initials = (assignee.name?.isNotEmpty == true)
+        ? assignee.name![0].toUpperCase()
+        : '?';
+    // Generate color based on name or id
+    final color = Colors.blue;
+
+    return _buildAvatar(initials, color.withOpacity(0.2), color);
   }
 
   Widget _buildAvatar(String initials, Color bg, Color text) {

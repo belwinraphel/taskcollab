@@ -11,6 +11,14 @@ class TaskDetailsPage extends StatelessWidget {
     return Scaffold(
       appBar: AppBar(
         title: Text(task.title),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.edit),
+            onPressed: () {
+              // TODO: Implement edit
+            },
+          ),
+        ],
       ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(16.0),
@@ -33,8 +41,37 @@ class TaskDetailsPage extends StatelessWidget {
               Text(task.dueDate!.toLocal().toString().split(' ')[0]),
               const SizedBox(height: 16),
             ],
-            _buildSectionTitle('Assignee'),
-            Text(task.assigneeId.isNotEmpty ? task.assigneeId : 'Unassigned'),
+            _buildSectionTitle('Assignees'),
+            if (task.assignees.isNotEmpty)
+              ...task.assignees.map((assignee) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4.0),
+                    child: Row(
+                      children: [
+                        if (assignee.avatarUrl != null)
+                          CircleAvatar(
+                            radius: 12,
+                            backgroundImage: NetworkImage(assignee.avatarUrl!),
+                          )
+                        else
+                          CircleAvatar(
+                            radius: 12,
+                            child: Text(
+                              (assignee.name?.isNotEmpty == true)
+                                  ? assignee.name![0].toUpperCase()
+                                  : '?',
+                              style: const TextStyle(fontSize: 10),
+                            ),
+                          ),
+                        const SizedBox(width: 8),
+                        Text(
+                          assignee.name ?? assignee.id,
+                          style: const TextStyle(fontSize: 16),
+                        ),
+                      ],
+                    ),
+                  ))
+            else
+              const Text('Unassigned'),
             const SizedBox(height: 16),
             _buildSectionTitle('Comments'),
             if (task.comments.isEmpty)

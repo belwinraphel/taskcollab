@@ -8,6 +8,7 @@ import '../bloc/tasks_event.dart';
 import '../bloc/tasks_state.dart';
 import '../widgets/kanban_task_card.dart';
 import '../widgets/overview_summary_card.dart';
+import '../widgets/add_edit_task_dialog.dart';
 
 import '../bloc/tasks_state_extension.dart';
 import '../../../projects/presentation/bloc/projects_bloc.dart';
@@ -41,7 +42,6 @@ class _ProjectTaskBoardPageState extends State<ProjectTaskBoardPage> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     return MultiBlocProvider(
       providers: [
@@ -53,7 +53,7 @@ class _ProjectTaskBoardPageState extends State<ProjectTaskBoardPage> {
           return Scaffold(
             backgroundColor: Colors.white,
             floatingActionButton: FloatingActionButton(
-              onPressed: () => _showCreateTaskDialog(context),
+              onPressed: () => _showAddEditTaskDialog(context),
               child: const Icon(Icons.add),
             ),
             body: SafeArea(
@@ -210,11 +210,25 @@ class _ProjectTaskBoardPageState extends State<ProjectTaskBoardPage> {
                         key: ValueKey(filteredTasks[index].id),
                         task: filteredTasks[index],
                         onTap: () {
+                          // Pass providers to TaskDetailsPage for editing capability
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (context) =>
-                                  TaskDetailsPage(task: filteredTasks[index]),
+                              builder: (_) => MultiBlocProvider(
+                                providers: [
+                                  BlocProvider.value(
+                                    value: context.read<ProjectsBloc>(),
+                                  ),
+                                  BlocProvider.value(
+                                    value: _tasksBloc,
+                                  ),
+                                  BlocProvider.value(
+                                    value: context.read<UsersBloc>(),
+                                  ),
+                                ],
+                                child:
+                                    TaskDetailsPage(task: filteredTasks[index]),
+                              ),
                             ),
                           );
                         },
@@ -400,53 +414,25 @@ class _ProjectTaskBoardPageState extends State<ProjectTaskBoardPage> {
       status: newStatus,
       priority: task.priority,
       dueDate: task.dueDate,
-      assigneeId: task.assigneeId,
+      assignees: task.assignees,
       comments: task.comments,
     );
     context.read<TasksBloc>().add(TasksEvent.updateTask(updatedTask));
   }
 
-  void _showCreateTaskDialog(BuildContext context) {
-    final titleController = TextEditingController();
-    final descController = TextEditingController();
-
+  void _showAddEditTaskDialog(BuildContext context, {TaskEntity? task}) {
     showDialog(
       context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Create Task'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title')),
-            TextField(
-                controller: descController,
-                decoration: const InputDecoration(labelText: 'Description')),
-          ],
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              final newTask = TaskEntity(
-                id: '',
-                projectId: widget.projectId,
-                title: titleController.text,
-                description: descController.text,
-                status: TaskStatus.todo,
-                priority: TaskPriority.medium,
-                assigneeId: '',
-                dueDate: DateTime.now().add(const Duration(days: 7)),
-                comments: const [],
-              );
-              _tasksBloc.add(TasksEvent.createTask(newTask));
-              Navigator.pop(ctx);
-            },
-            child: const Text('Create'),
-          ),
+      builder: (ctx) => MultiBlocProvider(
+        providers: [
+          BlocProvider.value(value: context.read<ProjectsBloc>()),
+          BlocProvider.value(value: context.read<UsersBloc>()),
+          BlocProvider.value(value: context.read<TasksBloc>()),
         ],
+        child: AddEditTaskDialog(
+          projectId: widget.projectId,
+          task: task,
+        ),
       ),
     );
   }

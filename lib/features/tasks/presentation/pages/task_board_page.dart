@@ -1,10 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_collab_app/features/tasks/presentation/widgets/add_edit_task_dialog.dart';
+import 'package:task_collab_app/features/users/presentation/bloc/users_bloc.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../domain/entities/task.dart';
 import '../bloc/tasks_bloc.dart';
 import '../bloc/tasks_event.dart';
 import '../bloc/tasks_state.dart';
+import '../../../projects/presentation/bloc/projects_bloc.dart';
+import '../../../projects/presentation/bloc/projects_event.dart';
+
 import 'task_details_page.dart';
 
 class TaskBoardPage extends StatelessWidget {
@@ -14,9 +19,16 @@ class TaskBoardPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return BlocProvider(
-      create: (context) =>
-          getIt<TasksBloc>()..add(TasksEvent.started(projectId)),
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(
+          create: (context) =>
+              getIt<TasksBloc>()..add(TasksEvent.started(projectId)),
+        ),
+        BlocProvider(
+          create: (context) => getIt<UsersBloc>(),
+        ),
+      ],
       child: Scaffold(
         appBar: AppBar(title: const Text('Task Board')),
         body: BlocBuilder<TasksBloc, TasksState>(
@@ -32,7 +44,20 @@ class TaskBoardPage extends StatelessWidget {
         floatingActionButton: Builder(
           builder: (context) {
             return FloatingActionButton(
-              onPressed: () => _showCreateTaskDialog(context, projectId),
+              onPressed: () => showDialog(
+                context: context,
+                builder: (_) => MultiBlocProvider(
+                  providers: [
+                    BlocProvider.value(value: context.read<TasksBloc>()),
+                    BlocProvider.value(value: context.read<UsersBloc>()),
+                    // Provide ProjectsBloc for the dialog and load projects to find members
+                    BlocProvider(
+                        create: (_) => getIt<ProjectsBloc>()
+                          ..add(const ProjectsEvent.started())),
+                  ],
+                  child: AddEditTaskDialog(projectId: projectId),
+                ),
+              ),
               child: const Icon(Icons.add),
             );
           },
@@ -49,7 +74,6 @@ class TaskBoardPage extends StatelessWidget {
         children: [
           _buildColumn(context, 'To Do', TaskStatus.todo, tasks),
           _buildColumn(context, 'Active', TaskStatus.inProgress, tasks),
-
           _buildColumn(context, 'Done', TaskStatus.done, tasks),
         ],
       ),
@@ -71,7 +95,7 @@ class TaskBoardPage extends StatelessWidget {
           status: status,
           priority: task.priority,
           dueDate: task.dueDate,
-          assigneeId: task.assigneeId,
+          assignees: task.assignees,
           comments: task.comments,
         );
         context.read<TasksBloc>().add(TasksEvent.updateTask(updatedTask));
@@ -135,7 +159,17 @@ class TaskBoardPage extends StatelessWidget {
           Navigator.push(
             context,
             MaterialPageRoute(
-              builder: (context) => TaskDetailsPage(task: task),
+              builder: (_) => MultiBlocProvider(
+                providers: [
+                  BlocProvider.value(value: context.read<TasksBloc>()),
+                  BlocProvider.value(value: context.read<UsersBloc>()),
+                  BlocProvider(
+                      create: (_) => getIt<ProjectsBloc>()
+                        ..add(const ProjectsEvent
+                            .started())), // Create new & load for details
+                ],
+                child: TaskDetailsPage(task: task),
+              ),
             ),
           );
         },
@@ -152,51 +186,6 @@ class TaskBoardPage extends StatelessWidget {
             ],
           ),
         ),
-      ),
-    );
-  }
-
-  void _showCreateTaskDialog(BuildContext context, String projectId) {
-    final titleController = TextEditingController();
-    final descController = TextEditingController();
-
-    showDialog(
-      context: context,
-      builder: (ctx) => AlertDialog(
-        title: const Text('Create Task'),
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            TextField(
-                controller: titleController,
-                decoration: const InputDecoration(labelText: 'Title')),
-            TextField(
-                controller: descController,
-                decoration: const InputDecoration(labelText: 'Description')),
-          ],
-        ),
-        actions: [
-          TextButton(
-              onPressed: () => Navigator.pop(ctx), child: const Text('Cancel')),
-          TextButton(
-            onPressed: () {
-              // Need a real user ID here. For now validation will happen in repo/usecase or skipped
-              // Assuming repo handles defaults or we pass empty and backend handles it
-              final newTask = TaskEntity(
-                id: '', // Generated by backend
-                projectId: projectId,
-                title: titleController.text,
-                description: descController.text,
-                status: TaskStatus.todo,
-                priority: TaskPriority.medium,
-                assigneeId: '', // Current user
-              );
-              context.read<TasksBloc>().add(TasksEvent.createTask(newTask));
-              Navigator.pop(ctx);
-            },
-            child: const Text('Create'),
-          ),
-        ],
       ),
     );
   }

@@ -1,7 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../../../core/error/exceptions.dart';
 import '../models/task_model.dart';
-import '../../domain/entities/task.dart'; // Needed for TaskStatus enum maybe? No, derived from model.
+// Needed for TaskStatus enum maybe? No, derived from model.
 
 abstract class TaskRemoteDataSource {
   Stream<List<TaskModel>> getTasks(String projectId);

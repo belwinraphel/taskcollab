@@ -12,7 +12,7 @@ class TaskEntity extends Equatable {
   final TaskStatus status;
   final TaskPriority priority;
   final DateTime? dueDate;
-  final String assigneeId;
+  final List<TaskAssignee> assignees;
   final List<String> comments;
 
   const TaskEntity({
@@ -23,7 +23,7 @@ class TaskEntity extends Equatable {
     required this.status,
     required this.priority,
     this.dueDate,
-    required this.assigneeId,
+    this.assignees = const [],
     this.comments = const [],
   });
 
@@ -36,7 +36,22 @@ class TaskEntity extends Equatable {
         status,
         priority,
         dueDate,
-        assigneeId,
+        assignees,
         comments
       ];
+}
+
+class TaskAssignee extends Equatable {
+  final String id;
+  final String? name; // display name or email
+  final String? avatarUrl;
+
+  const TaskAssignee({
+    required this.id,
+    this.name,
+    this.avatarUrl,
+  });
+
+  @override
+  List<Object?> get props => [id, name, avatarUrl];
 }

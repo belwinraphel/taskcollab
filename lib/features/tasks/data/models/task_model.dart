@@ -10,12 +10,32 @@ class TaskModel extends TaskEntity {
     required super.status,
     required super.priority,
     super.dueDate,
-    required super.assigneeId,
+    super.assignees,
     super.comments,
   });
 
   factory TaskModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
+
+    // Handle legacy single assignee
+    List<TaskAssignee> loadedAssignees = [];
+    if (data['assignees'] != null) {
+      loadedAssignees = (data['assignees'] as List)
+          .map((e) => TaskAssignee(
+                id: e['id'],
+                name: e['name'],
+                avatarUrl: e['avatarUrl'],
+              ))
+          .toList();
+    } else if (data['assigneeId'] != null &&
+        (data['assigneeId'] as String).isNotEmpty) {
+      loadedAssignees.add(TaskAssignee(
+        id: data['assigneeId'],
+        name: data['assigneeName'],
+        avatarUrl: data['assigneeAvatar'],
+      ));
+    }
+
     return TaskModel(
       id: doc.id,
       projectId: data['projectId'] ?? '',
@@ -32,7 +52,7 @@ class TaskModel extends TaskEntity {
       dueDate: data['dueDate'] != null
           ? (data['dueDate'] as Timestamp).toDate()
           : null,
-      assigneeId: data['assigneeId'] ?? '',
+      assignees: loadedAssignees,
       comments: List<String>.from(data['comments'] ?? []),
     );
   }
@@ -45,7 +65,13 @@ class TaskModel extends TaskEntity {
       'status': status.name,
       'priority': priority.name,
       'dueDate': dueDate != null ? Timestamp.fromDate(dueDate!) : null,
-      'assigneeId': assigneeId,
+      'assignees': assignees
+          .map((e) => {
+                'id': e.id,
+                'name': e.name,
+                'avatarUrl': e.avatarUrl,
+              })
+          .toList(),
       'comments': comments,
     };
   }

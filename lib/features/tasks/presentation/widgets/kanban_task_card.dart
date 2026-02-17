@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../../domain/entities/task.dart';
 
 import 'package:intl/intl.dart';
+import 'dart:math';
 
 class KanbanTaskCard extends StatelessWidget {
   final TaskEntity task;
@@ -91,7 +92,7 @@ class KanbanTaskCard extends StatelessWidget {
                       Row(
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
-                          _buildAvatars(task.assigneeId),
+                          Flexible(child: _buildAvatars()),
                           _buildTimeTag(task.dueDate),
                         ],
                       ),
@@ -118,17 +119,64 @@ class KanbanTaskCard extends StatelessWidget {
     }
   }
 
-  Widget _buildAvatars(String assigneeId) {
-    // Generate deterministic color and initials from assigneeId
-    final color = _generateColor(assigneeId);
-    final initials = assigneeId.isNotEmpty
-        ? assigneeId.substring(0, 2).toUpperCase()
-        : 'UN'; // Unknown
+  Widget _buildAvatars() {
+    if (task.assignees.isEmpty) {
+      return _buildAvatar('UN', Colors.grey.withOpacity(0.2), Colors.grey);
+    }
 
-    return Row(
-      children: [
-        _buildAvatar(initials, color.withOpacity(0.2), color),
-      ],
+    return SizedBox(
+      height: 28,
+      width: 28.0 + (task.assignees.length - 1) * 18.0,
+      child: Stack(
+        children: [
+          for (int i = 0; i < task.assignees.length && i < 3; i++)
+            Positioned(
+              left: i * 18.0,
+              child: _buildAssigneeAvatar(task.assignees[i]),
+            ),
+          if (task.assignees.length > 3)
+            Positioned(
+              left: 3 * 18.0,
+              child: _buildRemainingCount(task.assignees.length - 3),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildAssigneeAvatar(TaskAssignee assignee) {
+    if (assignee.avatarUrl != null) {
+      return CircleAvatar(
+        radius: 14,
+        backgroundImage: NetworkImage(assignee.avatarUrl!),
+      );
+    }
+    final initials = (assignee.name?.isNotEmpty == true)
+        ? assignee.name![0].toUpperCase()
+        : '?';
+    final color = _generateColor(assignee.id);
+    return _buildAvatar(initials, color.withOpacity(0.2), color);
+  }
+
+  Widget _buildRemainingCount(int count) {
+    return Container(
+      width: 28,
+      height: 28,
+      decoration: BoxDecoration(
+        color: Colors.grey[300],
+        shape: BoxShape.circle,
+        border: Border.all(color: Colors.white, width: 2),
+      ),
+      child: Center(
+        child: Text(
+          '+$count',
+          style: const TextStyle(
+            fontSize: 10,
+            fontWeight: FontWeight.bold,
+            color: Colors.black54,
+          ),
+        ),
+      ),
     );
   }
 

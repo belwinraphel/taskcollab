@@ -33,7 +33,7 @@ class TaskRepositoryImpl implements TaskRepository {
         status: task.status,
         priority: task.priority,
         dueDate: task.dueDate,
-        assigneeId: task.assigneeId,
+        assignees: task.assignees,
         comments: task.comments,
       );
       final result = await remoteDataSource.createTask(taskModel);
@@ -54,7 +54,7 @@ class TaskRepositoryImpl implements TaskRepository {
         status: task.status,
         priority: task.priority,
         dueDate: task.dueDate,
-        assigneeId: task.assigneeId,
+        assignees: task.assignees,
         comments: task.comments,
       );
       await remoteDataSource.updateTask(taskModel);
