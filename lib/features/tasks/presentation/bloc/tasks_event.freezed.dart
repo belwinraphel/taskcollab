@@ -21,7 +21,8 @@ mixin _$TasksEvent {
     required TResult Function(String projectId) started,
     required TResult Function(TaskEntity task) createTask,
     required TResult Function(TaskEntity task) updateTask,
-    required TResult Function(String taskId) deleteTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -29,7 +30,8 @@ mixin _$TasksEvent {
     TResult? Function(String projectId)? started,
     TResult? Function(TaskEntity task)? createTask,
     TResult? Function(TaskEntity task)? updateTask,
-    TResult? Function(String taskId)? deleteTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -37,7 +39,8 @@ mixin _$TasksEvent {
     TResult Function(String projectId)? started,
     TResult Function(TaskEntity task)? createTask,
     TResult Function(TaskEntity task)? updateTask,
-    TResult Function(String taskId)? deleteTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -47,6 +50,7 @@ mixin _$TasksEvent {
     required TResult Function(TasksCreateTask value) createTask,
     required TResult Function(TasksUpdateTask value) updateTask,
     required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -55,6 +59,7 @@ mixin _$TasksEvent {
     TResult? Function(TasksCreateTask value)? createTask,
     TResult? Function(TasksUpdateTask value)? updateTask,
     TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
@@ -63,6 +68,7 @@ mixin _$TasksEvent {
     TResult Function(TasksCreateTask value)? createTask,
     TResult Function(TasksUpdateTask value)? updateTask,
     TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -161,7 +167,8 @@ class _$TasksStartedImpl implements TasksStarted {
     required TResult Function(String projectId) started,
     required TResult Function(TaskEntity task) createTask,
     required TResult Function(TaskEntity task) updateTask,
-    required TResult Function(String taskId) deleteTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
   }) {
     return started(projectId);
   }
@@ -172,7 +179,8 @@ class _$TasksStartedImpl implements TasksStarted {
     TResult? Function(String projectId)? started,
     TResult? Function(TaskEntity task)? createTask,
     TResult? Function(TaskEntity task)? updateTask,
-    TResult? Function(String taskId)? deleteTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
   }) {
     return started?.call(projectId);
   }
@@ -183,7 +191,8 @@ class _$TasksStartedImpl implements TasksStarted {
     TResult Function(String projectId)? started,
     TResult Function(TaskEntity task)? createTask,
     TResult Function(TaskEntity task)? updateTask,
-    TResult Function(String taskId)? deleteTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -199,6 +208,7 @@ class _$TasksStartedImpl implements TasksStarted {
     required TResult Function(TasksCreateTask value) createTask,
     required TResult Function(TasksUpdateTask value) updateTask,
     required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
   }) {
     return started(this);
   }
@@ -210,6 +220,7 @@ class _$TasksStartedImpl implements TasksStarted {
     TResult? Function(TasksCreateTask value)? createTask,
     TResult? Function(TasksUpdateTask value)? updateTask,
     TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
   }) {
     return started?.call(this);
   }
@@ -221,6 +232,7 @@ class _$TasksStartedImpl implements TasksStarted {
     TResult Function(TasksCreateTask value)? createTask,
     TResult Function(TasksUpdateTask value)? updateTask,
     TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -314,7 +326,8 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     required TResult Function(String projectId) started,
     required TResult Function(TaskEntity task) createTask,
     required TResult Function(TaskEntity task) updateTask,
-    required TResult Function(String taskId) deleteTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
   }) {
     return createTask(task);
   }
@@ -325,7 +338,8 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     TResult? Function(String projectId)? started,
     TResult? Function(TaskEntity task)? createTask,
     TResult? Function(TaskEntity task)? updateTask,
-    TResult? Function(String taskId)? deleteTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
   }) {
     return createTask?.call(task);
   }
@@ -336,7 +350,8 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     TResult Function(String projectId)? started,
     TResult Function(TaskEntity task)? createTask,
     TResult Function(TaskEntity task)? updateTask,
-    TResult Function(String taskId)? deleteTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
     required TResult orElse(),
   }) {
     if (createTask != null) {
@@ -352,6 +367,7 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     required TResult Function(TasksCreateTask value) createTask,
     required TResult Function(TasksUpdateTask value) updateTask,
     required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
   }) {
     return createTask(this);
   }
@@ -363,6 +379,7 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     TResult? Function(TasksCreateTask value)? createTask,
     TResult? Function(TasksUpdateTask value)? updateTask,
     TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
   }) {
     return createTask?.call(this);
   }
@@ -374,6 +391,7 @@ class _$TasksCreateTaskImpl implements TasksCreateTask {
     TResult Function(TasksCreateTask value)? createTask,
     TResult Function(TasksUpdateTask value)? updateTask,
     TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
     required TResult orElse(),
   }) {
     if (createTask != null) {
@@ -467,7 +485,8 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     required TResult Function(String projectId) started,
     required TResult Function(TaskEntity task) createTask,
     required TResult Function(TaskEntity task) updateTask,
-    required TResult Function(String taskId) deleteTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
   }) {
     return updateTask(task);
   }
@@ -478,7 +497,8 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     TResult? Function(String projectId)? started,
     TResult? Function(TaskEntity task)? createTask,
     TResult? Function(TaskEntity task)? updateTask,
-    TResult? Function(String taskId)? deleteTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
   }) {
     return updateTask?.call(task);
   }
@@ -489,7 +509,8 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     TResult Function(String projectId)? started,
     TResult Function(TaskEntity task)? createTask,
     TResult Function(TaskEntity task)? updateTask,
-    TResult Function(String taskId)? deleteTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
     required TResult orElse(),
   }) {
     if (updateTask != null) {
@@ -505,6 +526,7 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     required TResult Function(TasksCreateTask value) createTask,
     required TResult Function(TasksUpdateTask value) updateTask,
     required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
   }) {
     return updateTask(this);
   }
@@ -516,6 +538,7 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     TResult? Function(TasksCreateTask value)? createTask,
     TResult? Function(TasksUpdateTask value)? updateTask,
     TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
   }) {
     return updateTask?.call(this);
   }
@@ -527,6 +550,7 @@ class _$TasksUpdateTaskImpl implements TasksUpdateTask {
     TResult Function(TasksCreateTask value)? createTask,
     TResult Function(TasksUpdateTask value)? updateTask,
     TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
     required TResult orElse(),
   }) {
     if (updateTask != null) {
@@ -554,7 +578,7 @@ abstract class _$$TasksDeleteTaskImplCopyWith<$Res> {
           $Res Function(_$TasksDeleteTaskImpl) then) =
       __$$TasksDeleteTaskImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String taskId});
+  $Res call({String projectId, String taskId});
 }
 
 /// @nodoc
@@ -570,9 +594,14 @@ class __$$TasksDeleteTaskImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
+    Object? projectId = null,
     Object? taskId = null,
   }) {
     return _then(_$TasksDeleteTaskImpl(
+      null == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
+              as String,
       null == taskId
           ? _value.taskId
           : taskId // ignore: cast_nullable_to_non_nullable
@@ -584,14 +613,16 @@ class __$$TasksDeleteTaskImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$TasksDeleteTaskImpl implements TasksDeleteTask {
-  const _$TasksDeleteTaskImpl(this.taskId);
+  const _$TasksDeleteTaskImpl(this.projectId, this.taskId);
 
+  @override
+  final String projectId;
   @override
   final String taskId;
 
   @override
   String toString() {
-    return 'TasksEvent.deleteTask(taskId: $taskId)';
+    return 'TasksEvent.deleteTask(projectId: $projectId, taskId: $taskId)';
   }
 
   @override
@@ -599,11 +630,13 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TasksDeleteTaskImpl &&
+            (identical(other.projectId, projectId) ||
+                other.projectId == projectId) &&
             (identical(other.taskId, taskId) || other.taskId == taskId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, taskId);
+  int get hashCode => Object.hash(runtimeType, projectId, taskId);
 
   /// Create a copy of TasksEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -620,9 +653,10 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     required TResult Function(String projectId) started,
     required TResult Function(TaskEntity task) createTask,
     required TResult Function(TaskEntity task) updateTask,
-    required TResult Function(String taskId) deleteTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
   }) {
-    return deleteTask(taskId);
+    return deleteTask(projectId, taskId);
   }
 
   @override
@@ -631,9 +665,10 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     TResult? Function(String projectId)? started,
     TResult? Function(TaskEntity task)? createTask,
     TResult? Function(TaskEntity task)? updateTask,
-    TResult? Function(String taskId)? deleteTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
   }) {
-    return deleteTask?.call(taskId);
+    return deleteTask?.call(projectId, taskId);
   }
 
   @override
@@ -642,11 +677,12 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     TResult Function(String projectId)? started,
     TResult Function(TaskEntity task)? createTask,
     TResult Function(TaskEntity task)? updateTask,
-    TResult Function(String taskId)? deleteTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
     required TResult orElse(),
   }) {
     if (deleteTask != null) {
-      return deleteTask(taskId);
+      return deleteTask(projectId, taskId);
     }
     return orElse();
   }
@@ -658,6 +694,7 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     required TResult Function(TasksCreateTask value) createTask,
     required TResult Function(TasksUpdateTask value) updateTask,
     required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
   }) {
     return deleteTask(this);
   }
@@ -669,6 +706,7 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     TResult? Function(TasksCreateTask value)? createTask,
     TResult? Function(TasksUpdateTask value)? updateTask,
     TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
   }) {
     return deleteTask?.call(this);
   }
@@ -680,6 +718,7 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
     TResult Function(TasksCreateTask value)? createTask,
     TResult Function(TasksUpdateTask value)? updateTask,
     TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
     required TResult orElse(),
   }) {
     if (deleteTask != null) {
@@ -690,13 +729,175 @@ class _$TasksDeleteTaskImpl implements TasksDeleteTask {
 }
 
 abstract class TasksDeleteTask implements TasksEvent {
-  const factory TasksDeleteTask(final String taskId) = _$TasksDeleteTaskImpl;
+  const factory TasksDeleteTask(final String projectId, final String taskId) =
+      _$TasksDeleteTaskImpl;
 
+  String get projectId;
   String get taskId;
 
   /// Create a copy of TasksEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$TasksDeleteTaskImplCopyWith<_$TasksDeleteTaskImpl> get copyWith =>
+      throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$TasksFilterChangedImplCopyWith<$Res> {
+  factory _$$TasksFilterChangedImplCopyWith(_$TasksFilterChangedImpl value,
+          $Res Function(_$TasksFilterChangedImpl) then) =
+      __$$TasksFilterChangedImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({TaskStatus filter});
+}
+
+/// @nodoc
+class __$$TasksFilterChangedImplCopyWithImpl<$Res>
+    extends _$TasksEventCopyWithImpl<$Res, _$TasksFilterChangedImpl>
+    implements _$$TasksFilterChangedImplCopyWith<$Res> {
+  __$$TasksFilterChangedImplCopyWithImpl(_$TasksFilterChangedImpl _value,
+      $Res Function(_$TasksFilterChangedImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of TasksEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? filter = null,
+  }) {
+    return _then(_$TasksFilterChangedImpl(
+      null == filter
+          ? _value.filter
+          : filter // ignore: cast_nullable_to_non_nullable
+              as TaskStatus,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$TasksFilterChangedImpl implements TasksFilterChanged {
+  const _$TasksFilterChangedImpl(this.filter);
+
+  @override
+  final TaskStatus filter;
+
+  @override
+  String toString() {
+    return 'TasksEvent.filterChanged(filter: $filter)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$TasksFilterChangedImpl &&
+            (identical(other.filter, filter) || other.filter == filter));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, filter);
+
+  /// Create a copy of TasksEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$TasksFilterChangedImplCopyWith<_$TasksFilterChangedImpl> get copyWith =>
+      __$$TasksFilterChangedImplCopyWithImpl<_$TasksFilterChangedImpl>(
+          this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function(String projectId) started,
+    required TResult Function(TaskEntity task) createTask,
+    required TResult Function(TaskEntity task) updateTask,
+    required TResult Function(String projectId, String taskId) deleteTask,
+    required TResult Function(TaskStatus filter) filterChanged,
+  }) {
+    return filterChanged(filter);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function(String projectId)? started,
+    TResult? Function(TaskEntity task)? createTask,
+    TResult? Function(TaskEntity task)? updateTask,
+    TResult? Function(String projectId, String taskId)? deleteTask,
+    TResult? Function(TaskStatus filter)? filterChanged,
+  }) {
+    return filterChanged?.call(filter);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function(String projectId)? started,
+    TResult Function(TaskEntity task)? createTask,
+    TResult Function(TaskEntity task)? updateTask,
+    TResult Function(String projectId, String taskId)? deleteTask,
+    TResult Function(TaskStatus filter)? filterChanged,
+    required TResult orElse(),
+  }) {
+    if (filterChanged != null) {
+      return filterChanged(filter);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(TasksStarted value) started,
+    required TResult Function(TasksCreateTask value) createTask,
+    required TResult Function(TasksUpdateTask value) updateTask,
+    required TResult Function(TasksDeleteTask value) deleteTask,
+    required TResult Function(TasksFilterChanged value) filterChanged,
+  }) {
+    return filterChanged(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(TasksStarted value)? started,
+    TResult? Function(TasksCreateTask value)? createTask,
+    TResult? Function(TasksUpdateTask value)? updateTask,
+    TResult? Function(TasksDeleteTask value)? deleteTask,
+    TResult? Function(TasksFilterChanged value)? filterChanged,
+  }) {
+    return filterChanged?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(TasksStarted value)? started,
+    TResult Function(TasksCreateTask value)? createTask,
+    TResult Function(TasksUpdateTask value)? updateTask,
+    TResult Function(TasksDeleteTask value)? deleteTask,
+    TResult Function(TasksFilterChanged value)? filterChanged,
+    required TResult orElse(),
+  }) {
+    if (filterChanged != null) {
+      return filterChanged(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class TasksFilterChanged implements TasksEvent {
+  const factory TasksFilterChanged(final TaskStatus filter) =
+      _$TasksFilterChangedImpl;
+
+  TaskStatus get filter;
+
+  /// Create a copy of TasksEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$TasksFilterChangedImplCopyWith<_$TasksFilterChangedImpl> get copyWith =>
       throw _privateConstructorUsedError;
 }

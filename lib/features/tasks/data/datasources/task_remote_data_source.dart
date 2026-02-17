@@ -9,7 +9,7 @@ abstract class TaskRemoteDataSource {
       String projectId);
   Future<TaskModel> createTask(TaskModel task);
   Future<void> updateTask(TaskModel task);
-  Future<void> deleteTask(String taskId);
+  Future<void> deleteTask(String projectId, String taskId);
 }
 
 class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
@@ -20,8 +20,9 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   @override
   Stream<List<TaskModel>> getTasks(String projectId) {
     return firestore
+        .collection('projects')
+        .doc(projectId)
         .collection('tasks')
-        .where('projectId', isEqualTo: projectId)
         .orderBy('status') // Simple ordering
         .snapshots()
         .map((snapshot) =>
@@ -32,8 +33,9 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   Stream<QuerySnapshot<Map<String, dynamic>>> getTaskSnapshots(
       String projectId) {
     return firestore
+        .collection('projects')
+        .doc(projectId)
         .collection('tasks')
-        .where('projectId', isEqualTo: projectId)
         .orderBy('status')
         .snapshots();
   }
@@ -41,8 +43,11 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   @override
   Future<TaskModel> createTask(TaskModel task) async {
     try {
-      final docRef =
-          await firestore.collection('tasks').add(task.toFirestore());
+      final docRef = await firestore
+          .collection('projects')
+          .doc(task.projectId)
+          .collection('tasks')
+          .add(task.toFirestore());
       final doc = await docRef.get();
       return TaskModel.fromFirestore(doc);
     } catch (e) {
@@ -54,6 +59,8 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   Future<void> updateTask(TaskModel task) async {
     try {
       await firestore
+          .collection('projects')
+          .doc(task.projectId)
           .collection('tasks')
           .doc(task.id)
           .update(task.toFirestore());
@@ -63,9 +70,14 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   }
 
   @override
-  Future<void> deleteTask(String taskId) async {
+  Future<void> deleteTask(String projectId, String taskId) async {
     try {
-      await firestore.collection('tasks').doc(taskId).delete();
+      await firestore
+          .collection('projects')
+          .doc(projectId)
+          .collection('tasks')
+          .doc(taskId)
+          .delete();
     } catch (e) {
       throw ServerException(e.toString());
     }

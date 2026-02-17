@@ -32,6 +32,10 @@ import '../../features/tasks/domain/usecases/delete_task.dart';
 import '../../features/tasks/domain/usecases/get_tasks.dart';
 import '../../features/tasks/domain/usecases/update_task.dart';
 import '../../features/tasks/presentation/bloc/tasks_bloc.dart';
+import '../../features/users/data/datasources/user_remote_data_source.dart';
+import '../../features/users/data/repositories/user_repository_impl.dart';
+import '../../features/users/domain/repositories/user_repository.dart';
+import '../../features/users/presentation/bloc/users_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -47,7 +51,7 @@ Future<void> init() async {
   // Features - Auth
   // Data sources
   getIt.registerLazySingleton<AuthRemoteDataSource>(
-    () => AuthRemoteDataSourceImpl(getIt()),
+    () => AuthRemoteDataSourceImpl(getIt(), getIt()),
   );
   getIt.registerLazySingleton<AuthLocalDataSource>(
     () => AuthLocalDataSourceImpl(getIt()),
@@ -57,7 +61,7 @@ Future<void> init() async {
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: getIt(),
-      localDataSource: getIt(),
+      localDataSource: getIt(), userRepository: getIt(),
     ),
   );
 
@@ -103,7 +107,22 @@ Future<void> init() async {
     ),
   );
 
+  // Features - Users
+  // Data sources
+  getIt.registerLazySingleton<UserRemoteDataSource>(
+    () => UserRemoteDataSourceImpl(getIt()),
+  );
+  // Repository
+  getIt.registerLazySingleton<UserRepository>(
+    () => UserRepositoryImpl(getIt()),
+  );
+  // Bloc
+  getIt.registerFactory(
+    () => UsersBloc(userRepository: getIt()),
+  );
+
   // Features - Tasks
+  // ...
   // Core Services
   getIt.registerLazySingleton<LocalNotificationService>(
     () => LocalNotificationService(),

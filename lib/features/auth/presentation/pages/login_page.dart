@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/di/injection_container.dart';
-import '../../../projects/presentation/pages/dashboard_page.dart';
+
+import '../../../projects/presentation/pages/project_dashboard_page.dart';
 import '../bloc/auth_bloc.dart';
 import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
@@ -49,8 +49,8 @@ class _LoginPageState extends State<LoginPage> {
         listener: (context, state) {
           state.maybeMap(
             authenticated: (_) {
-              Navigator.of(context).pushReplacement(
-                  MaterialPageRoute(builder: (_) => const DashboardPage()));
+              Navigator.of(context).pushReplacement(MaterialPageRoute(
+                  builder: (_) => const ProjectDashboardPage()));
             },
             error: (state) {
               ScaffoldMessenger.of(context)

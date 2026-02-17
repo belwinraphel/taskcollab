@@ -10,6 +10,7 @@ import 'features/auth/presentation/pages/splash_page.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'core/services/local_notification_service.dart';
 import 'core/services/push_notification_service.dart';
+import 'features/tasks/presentation/pages/project_task_board_page.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -20,10 +21,12 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   print("Handling a background message: ${message.messageId}");
 }
 
+final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
-  // Initialize Firebase
+  // ... (Firebase init)
   await Firebase.initializeApp(
     options: const FirebaseOptions(
       apiKey: 'AIzaSyA9W-cqWGB4ExrOMxcLW9pSFcRbnXPd_k4',
@@ -36,15 +39,32 @@ void main() async {
     ),
   );
 
-  // Set the background messaging handler early on, as a named top-level function
   FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
 
-  // Initialize Dependency Injection
   await di.init();
 
-  // Initialize Notifications
-  await di.getIt<LocalNotificationService>().initialize();
+  final localNotificationService = di.getIt<LocalNotificationService>();
+  await localNotificationService.initialize();
   await di.getIt<PushNotificationService>().initialize();
+
+  // Listen for notification taps
+  localNotificationService.payloadStream.listen((payload) {
+    if (payload.contains('|')) {
+      final parts = payload.split('|');
+      final projectId = parts[0];
+      // final taskId = parts[1]; // Can be used to highlight task or open details directly later
+
+      navigatorKey.currentState?.push(
+        MaterialPageRoute(
+          builder: (_) => ProjectTaskBoardPage(
+            projectId: projectId,
+            // Project name is unknown here, pass null or fetch it
+            projectName: null,
+          ),
+        ),
+      );
+    }
+  });
 
   runApp(const MyApp());
 }
@@ -58,6 +78,7 @@ class MyApp extends StatelessWidget {
       create: (context) =>
           di.getIt<AuthBloc>()..add(const AuthEvent.appStarted()),
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         title: 'Task Collab App',
         theme: ThemeData(
           colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),

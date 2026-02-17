@@ -8,5 +8,8 @@ class TasksEvent with _$TasksEvent {
   const factory TasksEvent.started(String projectId) = TasksStarted;
   const factory TasksEvent.createTask(TaskEntity task) = TasksCreateTask;
   const factory TasksEvent.updateTask(TaskEntity task) = TasksUpdateTask;
-  const factory TasksEvent.deleteTask(String taskId) = TasksDeleteTask;
+  const factory TasksEvent.deleteTask(String projectId, String taskId) =
+      TasksDeleteTask;
+  const factory TasksEvent.filterChanged(TaskStatus filter) =
+      TasksFilterChanged;
 }

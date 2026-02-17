@@ -15,8 +15,10 @@ class ProjectRepositoryImpl implements ProjectRepository {
   @override
   Future<Either<Failure, Stream<List<Project>>>> getProjects() async {
     try {
-      // In a real app, filtering by user would happen here or in query
-      final projectStream = remoteDataSource.getProjects();
+      final user = firebaseAuth.currentUser;
+      if (user == null) return const Left(AuthFailure());
+
+      final projectStream = remoteDataSource.getProjects(user.uid);
       return Right(projectStream.map((models) => models
           .map((model) => Project(
                 id: model.id,

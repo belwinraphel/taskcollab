@@ -11,6 +11,7 @@ class TaskNotificationListener {
   final LocalNotificationService localNotificationService;
   final FirebaseAuth firebaseAuth;
   StreamSubscription? _subscription;
+  bool _isInitialLoad = true;
 
   TaskNotificationListener({
     required this.remoteDataSource,
@@ -20,6 +21,7 @@ class TaskNotificationListener {
 
   void startListening(String projectId) {
     _subscription?.cancel();
+    _isInitialLoad = true;
     _subscription = remoteDataSource.getTaskSnapshots(projectId).listen(
       (snapshot) {
         for (final change in snapshot.docChanges) {
@@ -34,22 +36,31 @@ class TaskNotificationListener {
           // or if the task isn't relevant?
           // For now, let's notify on "added" and "modified" if it's not local.
 
+          // Handle new tasks (added)
           if (change.type == DocumentChangeType.added) {
-            // Optional: Don't notify for initial load?
-            // Firestore sends 'added' for all existing docs on first listener.
-            // We can check `snapshot.metadata.isFromCache` but that might miss updates.
-            // A better way is using a timestamp, but for simplicity let's rely on
-            // checking if it's a NEW addition after we started listening?
-            // For this implementation, we might get a burst of notifications on app start if not careful.
-            // A common trick is to query with 'updatedAt' > now, but here we are listening to the whole collection.
+            // Skip initial load
+            if (_isInitialLoad) continue;
 
-            // WORKAROUND: For this assignment, we'll assume we only want to be notified of
-            // changes that happen *live*.
+            _handleNewTask(task, currentUserId);
           } else if (change.type == DocumentChangeType.modified) {
             _handleModification(task, currentUserId);
           }
         }
+        // After processing the first snapshot (even if empty or full), it's no longer initial load
+        _isInitialLoad = false;
       },
+    );
+  }
+
+  void _handleNewTask(TaskModel task, String? currentUserId) {
+    // Optional: Don't notify if I created it?
+    // if (task.assigneeId == currentUserId) return;
+
+    localNotificationService.showNotification(
+      id: task.id.hashCode,
+      title: 'New Task: ${task.title}',
+      body: 'Priority: ${task.priority.name}',
+      payload: '${task.projectId}|${task.id}',
     );
   }
 
@@ -59,7 +70,7 @@ class TaskNotificationListener {
       id: task.id.hashCode,
       title: 'Task Updated: ${task.title}',
       body: 'Status: ${task.status.name}',
-      payload: task.id,
+      payload: '${task.projectId}|${task.id}',
     );
   }
 

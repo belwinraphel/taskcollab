@@ -1,4 +1,5 @@
 import 'package:dartz/dartz.dart';
+import 'package:task_collab_app/features/users/domain/repositories/user_repository.dart';
 import '../../../../core/error/failures.dart';
 import '../../domain/entities/user.dart';
 import '../../domain/repositories/auth_repository.dart';
@@ -8,10 +9,12 @@ import '../datasources/auth_local_data_source.dart';
 class AuthRepositoryImpl implements AuthRepository {
   final AuthRemoteDataSource remoteDataSource;
   final AuthLocalDataSource localDataSource;
+  final UserRepository userRepository;
 
   AuthRepositoryImpl({
     required this.remoteDataSource,
     required this.localDataSource,
+    required this.userRepository,
   });
 
   @override
@@ -40,6 +43,8 @@ class AuthRepositoryImpl implements AuthRepository {
   Future<Either<Failure, void>> logout() async {
     try {
       await remoteDataSource.logout();
+      localDataSource.clearCache();
+      userRepository.clearCache();
       return const Right(null);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

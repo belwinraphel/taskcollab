@@ -1,9 +1,13 @@
+import 'dart:async';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'notification_service.dart';
 
 class LocalNotificationService implements NotificationService {
   final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
+
+  final _payloadController = StreamController<String>.broadcast();
+  Stream<String> get payloadStream => _payloadController.stream;
 
   @override
   Future<void> initialize() async {
@@ -26,7 +30,9 @@ class LocalNotificationService implements NotificationService {
     await _flutterLocalNotificationsPlugin.initialize(
       initializationSettings,
       onDidReceiveNotificationResponse: (NotificationResponse details) {
-        // Handle notification tap
+        if (details.payload != null) {
+          _payloadController.add(details.payload!);
+        }
       },
     );
   }

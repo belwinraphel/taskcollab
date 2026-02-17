@@ -23,6 +23,37 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
     on<ProjectsCreateProject>(_onCreateProject);
     on<ProjectsUpdateProject>(_onUpdateProject);
     on<ProjectsDeleteProject>(_onDeleteProject);
+    on<ProjectsAddMember>(_onAddMember);
+  }
+
+  Future<void> _onAddMember(
+      ProjectsAddMember event, Emitter<ProjectsState> emit) async {
+    // We need the current project to update it.
+    // Ideally, the UI passes the project, or we fetch it.
+    // For simplicity, let's assume the UI might pass the project or we rely on the stream update.
+    // BUT the event only has projectId.
+    // Let's check if we have the project in the current state.
+
+    final currentState = state;
+    if (currentState is! ProjectsLoaded) {
+      emit(const ProjectsState.error("Projects not loaded"));
+      return;
+    }
+
+    final project = currentState.projects.firstWhere(
+        (p) => p.id == event.projectId,
+        orElse: () => throw Exception("Project not found"));
+
+    // Check if already a member
+    if (project.memberIds.contains(event.userId)) {
+      return;
+    }
+
+    final updatedProject = project.copyWith(
+      memberIds: [...project.memberIds, event.userId],
+    );
+
+    add(ProjectsEvent.updateProject(updatedProject));
   }
 
   Future<void> _onStarted(

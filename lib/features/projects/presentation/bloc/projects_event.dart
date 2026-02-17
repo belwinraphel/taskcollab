@@ -8,8 +8,10 @@ class ProjectsEvent with _$ProjectsEvent {
   const factory ProjectsEvent.started() = ProjectsStarted;
   const factory ProjectsEvent.createProject(String name, String description) =
       ProjectsCreateProject;
-  const factory ProjectsEvent.deleteProject(String projectId) =
-      ProjectsDeleteProject;
   const factory ProjectsEvent.updateProject(Project project) =
       ProjectsUpdateProject;
+  const factory ProjectsEvent.deleteProject(String projectId) =
+      ProjectsDeleteProject;
+  const factory ProjectsEvent.addMember(String projectId, String userId) =
+      ProjectsAddMember;
 }

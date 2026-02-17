@@ -5,6 +5,7 @@ import '../../domain/entities/task.dart';
 import '../bloc/tasks_bloc.dart';
 import '../bloc/tasks_event.dart';
 import '../bloc/tasks_state.dart';
+import 'task_details_page.dart';
 
 class TaskBoardPage extends StatelessWidget {
   final String projectId;
@@ -43,11 +44,12 @@ class TaskBoardPage extends StatelessWidget {
   Widget _buildBoard(BuildContext context, List<TaskEntity> tasks) {
     return SingleChildScrollView(
       scrollDirection: Axis.horizontal,
-      child: Column(
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _buildColumn(context, 'To Do', TaskStatus.todo, tasks),
-          _buildColumn(context, 'In Progress', TaskStatus.inProgress, tasks),
+          _buildColumn(context, 'Active', TaskStatus.inProgress, tasks),
+
           _buildColumn(context, 'Done', TaskStatus.done, tasks),
         ],
       ),
@@ -58,8 +60,9 @@ class TaskBoardPage extends StatelessWidget {
       List<TaskEntity> allTasks) {
     final tasks = allTasks.where((t) => t.status == status).toList();
     return DragTarget<TaskEntity>(
-      onWillAccept: (task) => task != null && task.status != status,
-      onAccept: (task) {
+      onWillAcceptWithDetails: (details) => details.data.status != status,
+      onAcceptWithDetails: (details) {
+        final task = details.data;
         final updatedTask = TaskEntity(
           id: task.id,
           projectId: task.projectId,
@@ -94,8 +97,8 @@ class TaskBoardPage extends StatelessWidget {
                     style: const TextStyle(
                         fontWeight: FontWeight.bold, fontSize: 18)),
               ),
-              ...tasks.map((task) => _buildTaskCard(task)),
-              const SizedBox(height: 50), // Drop area padding
+              ...tasks.map((task) => _buildTaskCard(context, task)),
+              const SizedBox(height: 50),
             ],
           ),
         );
@@ -103,7 +106,7 @@ class TaskBoardPage extends StatelessWidget {
     );
   }
 
-  Widget _buildTaskCard(TaskEntity task) {
+  Widget _buildTaskCard(BuildContext context, TaskEntity task) {
     return Draggable<TaskEntity>(
       data: task,
       feedback: Material(
@@ -118,26 +121,36 @@ class TaskBoardPage extends StatelessWidget {
       ),
       childWhenDragging: Opacity(
         opacity: 0.5,
-        child: _taskCardWidget(task),
+        child: _taskCardWidget(context, task),
       ),
-      child: _taskCardWidget(task),
+      child: _taskCardWidget(context, task),
     );
   }
 
-  Widget _taskCardWidget(TaskEntity task) {
+  Widget _taskCardWidget(BuildContext context, TaskEntity task) {
     return Card(
       margin: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
-      child: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(task.title,
-                style: const TextStyle(fontWeight: FontWeight.bold)),
-            if (task.description.isNotEmpty)
-              Text(task.description,
-                  maxLines: 2, overflow: TextOverflow.ellipsis),
-          ],
+      child: InkWell(
+        onTap: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => TaskDetailsPage(task: task),
+            ),
+          );
+        },
+        child: Padding(
+          padding: const EdgeInsets.all(8.0),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(task.title,
+                  style: const TextStyle(fontWeight: FontWeight.bold)),
+              if (task.description.isNotEmpty)
+                Text(task.description,
+                    maxLines: 2, overflow: TextOverflow.ellipsis),
+            ],
+          ),
         ),
       ),
     );

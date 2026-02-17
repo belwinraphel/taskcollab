@@ -14,8 +14,9 @@ abstract class AuthRemoteDataSource {
 
 class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseAuth firebaseAuth;
+  final FirebaseFirestore firestore;
 
-  AuthRemoteDataSourceImpl(this.firebaseAuth);
+  AuthRemoteDataSourceImpl(this.firebaseAuth, this.firestore);
 
   @override
   Stream<UserModel?> get authUserStream {
@@ -37,7 +38,29 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (userCredential.user == null) {
         throw Exception('User not found');
       }
-      return UserModel.fromFirebase(userCredential.user!);
+
+      final user = userCredential.user!;
+      final userDocRef = firestore.collection('users').doc(user.uid);
+      final userDoc = await userDocRef.get();
+
+      if (!userDoc.exists) {
+        // Migration: Create user doc if it doesn't exist
+        await userDocRef.set({
+          'email': user.email,
+          'displayName': user.displayName,
+          'createdAt': FieldValue.serverTimestamp(),
+          'lastLoginAt': FieldValue.serverTimestamp(),
+          'email_lowercase': user.email?.toLowerCase(),
+          'displayName_lowercase': user.displayName?.toLowerCase(),
+        });
+      } else {
+        // Update lastLoginAt
+        await userDocRef.update({
+          'lastLoginAt': FieldValue.serverTimestamp(),
+        });
+      }
+
+      return UserModel.fromFirebase(user);
     } catch (e) {
       throw Exception(e.toString());
     }
@@ -53,7 +76,22 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (userCredential.user == null) {
         throw Exception('User creation failed');
       }
-      return UserModel.fromFirebase(userCredential.user!);
+
+      final user = userCredential.user!;
+
+      // Create user doc in Firestore
+      await firestore.collection('users').doc(user.uid).set({
+        'email': user.email,
+        'displayName':
+            user.displayName ?? email.split('@')[0], // Default display name
+        'createdAt': FieldValue.serverTimestamp(),
+        'lastLoginAt': FieldValue.serverTimestamp(),
+        'email_lowercase': user.email?.toLowerCase(),
+        'displayName_lowercase':
+            (user.displayName ?? email.split('@')[0]).toLowerCase(),
+      });
+
+      return UserModel.fromFirebase(user);
     } catch (e) {
       throw Exception(e.toString());
     }

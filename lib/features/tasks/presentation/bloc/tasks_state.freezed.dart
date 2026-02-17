@@ -20,7 +20,8 @@ mixin _$TasksState {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TaskEntity> tasks) loaded,
+    required TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)
+        loaded,
     required TResult Function(String message) error,
   }) =>
       throw _privateConstructorUsedError;
@@ -28,7 +29,7 @@ mixin _$TasksState {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TaskEntity> tasks)? loaded,
+    TResult? Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult? Function(String message)? error,
   }) =>
       throw _privateConstructorUsedError;
@@ -36,7 +37,7 @@ mixin _$TasksState {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TaskEntity> tasks)? loaded,
+    TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) =>
@@ -132,7 +133,8 @@ class _$TasksInitialImpl implements TasksInitial {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TaskEntity> tasks) loaded,
+    required TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)
+        loaded,
     required TResult Function(String message) error,
   }) {
     return initial();
@@ -143,7 +145,7 @@ class _$TasksInitialImpl implements TasksInitial {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TaskEntity> tasks)? loaded,
+    TResult? Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult? Function(String message)? error,
   }) {
     return initial?.call();
@@ -154,7 +156,7 @@ class _$TasksInitialImpl implements TasksInitial {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TaskEntity> tasks)? loaded,
+    TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -249,7 +251,8 @@ class _$TasksLoadingImpl implements TasksLoading {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TaskEntity> tasks) loaded,
+    required TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)
+        loaded,
     required TResult Function(String message) error,
   }) {
     return loading();
@@ -260,7 +263,7 @@ class _$TasksLoadingImpl implements TasksLoading {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TaskEntity> tasks)? loaded,
+    TResult? Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult? Function(String message)? error,
   }) {
     return loading?.call();
@@ -271,7 +274,7 @@ class _$TasksLoadingImpl implements TasksLoading {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TaskEntity> tasks)? loaded,
+    TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
@@ -329,7 +332,7 @@ abstract class _$$TasksLoadedImplCopyWith<$Res> {
           _$TasksLoadedImpl value, $Res Function(_$TasksLoadedImpl) then) =
       __$$TasksLoadedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({List<TaskEntity> tasks});
+  $Res call({List<TaskEntity> tasks, TaskStatus currentFilter});
 }
 
 /// @nodoc
@@ -346,12 +349,17 @@ class __$$TasksLoadedImplCopyWithImpl<$Res>
   @override
   $Res call({
     Object? tasks = null,
+    Object? currentFilter = null,
   }) {
     return _then(_$TasksLoadedImpl(
       null == tasks
           ? _value._tasks
           : tasks // ignore: cast_nullable_to_non_nullable
               as List<TaskEntity>,
+      currentFilter: null == currentFilter
+          ? _value.currentFilter
+          : currentFilter // ignore: cast_nullable_to_non_nullable
+              as TaskStatus,
     ));
   }
 }
@@ -359,7 +367,9 @@ class __$$TasksLoadedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$TasksLoadedImpl implements TasksLoaded {
-  const _$TasksLoadedImpl(final List<TaskEntity> tasks) : _tasks = tasks;
+  const _$TasksLoadedImpl(final List<TaskEntity> tasks,
+      {required this.currentFilter})
+      : _tasks = tasks;
 
   final List<TaskEntity> _tasks;
   @override
@@ -370,8 +380,11 @@ class _$TasksLoadedImpl implements TasksLoaded {
   }
 
   @override
+  final TaskStatus currentFilter;
+
+  @override
   String toString() {
-    return 'TasksState.loaded(tasks: $tasks)';
+    return 'TasksState.loaded(tasks: $tasks, currentFilter: $currentFilter)';
   }
 
   @override
@@ -379,12 +392,14 @@ class _$TasksLoadedImpl implements TasksLoaded {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
             other is _$TasksLoadedImpl &&
-            const DeepCollectionEquality().equals(other._tasks, _tasks));
+            const DeepCollectionEquality().equals(other._tasks, _tasks) &&
+            (identical(other.currentFilter, currentFilter) ||
+                other.currentFilter == currentFilter));
   }
 
   @override
-  int get hashCode =>
-      Object.hash(runtimeType, const DeepCollectionEquality().hash(_tasks));
+  int get hashCode => Object.hash(
+      runtimeType, const DeepCollectionEquality().hash(_tasks), currentFilter);
 
   /// Create a copy of TasksState
   /// with the given fields replaced by the non-null parameter values.
@@ -399,10 +414,11 @@ class _$TasksLoadedImpl implements TasksLoaded {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TaskEntity> tasks) loaded,
+    required TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)
+        loaded,
     required TResult Function(String message) error,
   }) {
-    return loaded(tasks);
+    return loaded(tasks, currentFilter);
   }
 
   @override
@@ -410,10 +426,10 @@ class _$TasksLoadedImpl implements TasksLoaded {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TaskEntity> tasks)? loaded,
+    TResult? Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult? Function(String message)? error,
   }) {
-    return loaded?.call(tasks);
+    return loaded?.call(tasks, currentFilter);
   }
 
   @override
@@ -421,12 +437,12 @@ class _$TasksLoadedImpl implements TasksLoaded {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TaskEntity> tasks)? loaded,
+    TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {
     if (loaded != null) {
-      return loaded(tasks);
+      return loaded(tasks, currentFilter);
     }
     return orElse();
   }
@@ -470,9 +486,11 @@ class _$TasksLoadedImpl implements TasksLoaded {
 }
 
 abstract class TasksLoaded implements TasksState {
-  const factory TasksLoaded(final List<TaskEntity> tasks) = _$TasksLoadedImpl;
+  const factory TasksLoaded(final List<TaskEntity> tasks,
+      {required final TaskStatus currentFilter}) = _$TasksLoadedImpl;
 
   List<TaskEntity> get tasks;
+  TaskStatus get currentFilter;
 
   /// Create a copy of TasksState
   /// with the given fields replaced by the non-null parameter values.
@@ -551,7 +569,8 @@ class _$TasksErrorImpl implements TasksError {
   TResult when<TResult extends Object?>({
     required TResult Function() initial,
     required TResult Function() loading,
-    required TResult Function(List<TaskEntity> tasks) loaded,
+    required TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)
+        loaded,
     required TResult Function(String message) error,
   }) {
     return error(message);
@@ -562,7 +581,7 @@ class _$TasksErrorImpl implements TasksError {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? initial,
     TResult? Function()? loading,
-    TResult? Function(List<TaskEntity> tasks)? loaded,
+    TResult? Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult? Function(String message)? error,
   }) {
     return error?.call(message);
@@ -573,7 +592,7 @@ class _$TasksErrorImpl implements TasksError {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? initial,
     TResult Function()? loading,
-    TResult Function(List<TaskEntity> tasks)? loaded,
+    TResult Function(List<TaskEntity> tasks, TaskStatus currentFilter)? loaded,
     TResult Function(String message)? error,
     required TResult orElse(),
   }) {

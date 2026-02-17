@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_collab_app/features/tasks/presentation/pages/project_task_board_page.dart';
 import '../../../../core/di/injection_container.dart';
 
 import '../bloc/projects_bloc.dart';
 import '../bloc/projects_event.dart';
 import '../bloc/projects_state.dart';
 import '../widgets/add_edit_project_dialog.dart';
-import '../../../tasks/presentation/pages/task_board_page.dart';
+import '../widgets/project_grid_card.dart';
 
 class ProjectDashboardPage extends StatelessWidget {
   const ProjectDashboardPage({super.key});
@@ -19,8 +20,80 @@ class ProjectDashboardPage extends StatelessWidget {
       child: Builder(
         builder: (context) {
           return Scaffold(
-            appBar: AppBar(
-              title: const Text('Projects'),
+            backgroundColor: const Color(0xFFF4F5F9), // Light background
+            appBar: _buildAppBar(),
+            body: Column(
+              children: [
+                _buildSearchBar(),
+                Expanded(
+                  child: BlocBuilder<ProjectsBloc, ProjectsState>(
+                    builder: (context, state) {
+                      return state.maybeWhen(
+                        loading: () =>
+                            const Center(child: CircularProgressIndicator()),
+                        error: (message) =>
+                            Center(child: Text('Error: $message')),
+                        loaded: (projects) {
+                          if (projects.isEmpty) {
+                            return _buildEmptyState();
+                          }
+                          return Padding(
+                            padding: const EdgeInsets.all(16.0),
+                            child: GridView.builder(
+                              gridDelegate:
+                                  const SliverGridDelegateWithMaxCrossAxisExtent(
+                                maxCrossAxisExtent: 300,
+                                childAspectRatio: 1.2,
+                                crossAxisSpacing: 16,
+                                mainAxisSpacing: 16,
+                              ),
+                              itemCount: projects.length,
+                              itemBuilder: (context, index) {
+                                final project = projects[index];
+                                return ProjectGridCard(
+                                  project: project,
+                                  onTap: () {
+                                    final projectsBloc =
+                                        context.read<ProjectsBloc>();
+                                    Navigator.of(context)
+                                        .push(MaterialPageRoute(
+                                      builder: (_) => BlocProvider.value(
+                                        value: projectsBloc,
+                                        child: ProjectTaskBoardPage(
+                                          projectId: project.id,
+                                          projectName: project.name,
+                                        ),
+                                      ),
+                                    ));
+                                  },
+                                  onEdit: () {
+                                    final bloc = context.read<ProjectsBloc>();
+                                    showDialog(
+                                      context: context,
+                                      builder: (context) => BlocProvider.value(
+                                        value: bloc,
+                                        child: AddEditProjectDialog(
+                                            project: project),
+                                      ),
+                                    );
+                                  },
+                                  onDelete: () {
+                                    context.read<ProjectsBloc>().add(
+                                          ProjectsEvent.deleteProject(
+                                              project.id),
+                                        );
+                                  },
+                                );
+                              },
+                            ),
+                          );
+                        },
+                        orElse: () => const SizedBox.shrink(),
+                      );
+                    },
+                  ),
+                ),
+              ],
             ),
             floatingActionButton: FloatingActionButton(
               onPressed: () {
@@ -33,68 +106,97 @@ class ProjectDashboardPage extends StatelessWidget {
                   ),
                 );
               },
-              child: const Icon(Icons.add),
-            ),
-            body: BlocBuilder<ProjectsBloc, ProjectsState>(
-              builder: (context, state) {
-                return state.maybeWhen(
-                  loading: () =>
-                      const Center(child: CircularProgressIndicator()),
-                  error: (message) => Center(child: Text('Error: $message')),
-                  loaded: (projects) {
-                    if (projects.isEmpty) {
-                      return const Center(child: Text('No projects found.'));
-                    }
-                    return ListView.builder(
-                      itemCount: projects.length,
-                      itemBuilder: (context, index) {
-                        final project = projects[index];
-                        return ListTile(
-                          title: Text(project.name),
-                          subtitle: Text(project.description),
-                          onTap: () {
-                            Navigator.of(context).push(MaterialPageRoute(
-                              builder: (_) =>
-                                  TaskBoardPage(projectId: project.id),
-                            ));
-                          },
-                          trailing: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              IconButton(
-                                icon: const Icon(Icons.edit),
-                                onPressed: () {
-                                  final bloc = context.read<ProjectsBloc>();
-                                  showDialog(
-                                    context: context,
-                                    builder: (context) => BlocProvider.value(
-                                      value: bloc,
-                                      child: AddEditProjectDialog(
-                                          project: project),
-                                    ),
-                                  );
-                                },
-                              ),
-                              IconButton(
-                                icon: const Icon(Icons.delete),
-                                onPressed: () {
-                                  context.read<ProjectsBloc>().add(
-                                        ProjectsEvent.deleteProject(project.id),
-                                      );
-                                },
-                              ),
-                            ],
-                          ),
-                        );
-                      },
-                    );
-                  },
-                  orElse: () => const SizedBox.shrink(),
-                );
-              },
+              backgroundColor: Colors.blue,
+              child: const Icon(Icons.add, color: Colors.white),
             ),
           );
         },
+      ),
+    );
+  }
+
+  PreferredSizeWidget _buildAppBar() {
+    return AppBar(
+      title: const Text(
+        'My Projects',
+        style: TextStyle(fontWeight: FontWeight.bold, color: Colors.black87),
+      ),
+      backgroundColor: Colors.white,
+      elevation: 0,
+      actions: [
+        IconButton(
+          icon: const Icon(Icons.notifications_none, color: Colors.grey),
+          onPressed: () {},
+        ),
+        const Padding(
+          padding: EdgeInsets.only(right: 16.0),
+          child: CircleAvatar(
+            backgroundColor: Colors.blue,
+            child: Text("U", style: TextStyle(color: Colors.white)),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSearchBar() {
+    return Container(
+      color: Colors.white,
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
+      child: Row(
+        children: [
+          Expanded(
+            child: TextField(
+              decoration: InputDecoration(
+                hintText: 'Search projects...',
+                prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                filled: true,
+                fillColor: const Color(0xFFF3F4F6),
+                border: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide.none,
+                ),
+                contentPadding: const EdgeInsets.symmetric(vertical: 0),
+              ),
+            ),
+          ),
+          const SizedBox(width: 12),
+          Container(
+            decoration: BoxDecoration(
+              color: const Color(0xFFF3F4F6),
+              borderRadius: BorderRadius.circular(12),
+            ),
+            child: IconButton(
+              icon: const Icon(Icons.filter_list, color: Colors.grey),
+              onPressed: () {},
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(Icons.folder_off_outlined, size: 64, color: Colors.grey[400]),
+          const SizedBox(height: 16),
+          Text(
+            'No projects found',
+            style: TextStyle(
+              fontSize: 18,
+              fontWeight: FontWeight.bold,
+              color: Colors.grey[600],
+            ),
+          ),
+          const SizedBox(height: 8),
+          Text(
+            'Create a new project to get started',
+            style: TextStyle(color: Colors.grey[500]),
+          ),
+        ],
       ),
     );
   }

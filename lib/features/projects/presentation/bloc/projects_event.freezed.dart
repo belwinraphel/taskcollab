@@ -20,24 +20,27 @@ mixin _$ProjectsEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function(String name, String description) createProject,
-    required TResult Function(String projectId) deleteProject,
     required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function(String name, String description)? createProject,
-    TResult? Function(String projectId)? deleteProject,
     TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function(String name, String description)? createProject,
-    TResult Function(String projectId)? deleteProject,
     TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -45,24 +48,27 @@ mixin _$ProjectsEvent {
   TResult map<TResult extends Object?>({
     required TResult Function(ProjectsStarted value) started,
     required TResult Function(ProjectsCreateProject value) createProject,
-    required TResult Function(ProjectsDeleteProject value) deleteProject,
     required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProjectsStarted value)? started,
     TResult? Function(ProjectsCreateProject value)? createProject,
-    TResult? Function(ProjectsDeleteProject value)? deleteProject,
     TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
   }) =>
       throw _privateConstructorUsedError;
   @optionalTypeArgs
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProjectsStarted value)? started,
     TResult Function(ProjectsCreateProject value)? createProject,
-    TResult Function(ProjectsDeleteProject value)? deleteProject,
     TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
     required TResult orElse(),
   }) =>
       throw _privateConstructorUsedError;
@@ -132,8 +138,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function(String name, String description) createProject,
-    required TResult Function(String projectId) deleteProject,
     required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
   }) {
     return started();
   }
@@ -143,8 +150,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function(String name, String description)? createProject,
-    TResult? Function(String projectId)? deleteProject,
     TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
   }) {
     return started?.call();
   }
@@ -154,8 +162,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function(String name, String description)? createProject,
-    TResult Function(String projectId)? deleteProject,
     TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -169,8 +178,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult map<TResult extends Object?>({
     required TResult Function(ProjectsStarted value) started,
     required TResult Function(ProjectsCreateProject value) createProject,
-    required TResult Function(ProjectsDeleteProject value) deleteProject,
     required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
   }) {
     return started(this);
   }
@@ -180,8 +190,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProjectsStarted value)? started,
     TResult? Function(ProjectsCreateProject value)? createProject,
-    TResult? Function(ProjectsDeleteProject value)? deleteProject,
     TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
   }) {
     return started?.call(this);
   }
@@ -191,8 +202,9 @@ class _$ProjectsStartedImpl implements ProjectsStarted {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProjectsStarted value)? started,
     TResult Function(ProjectsCreateProject value)? createProject,
-    TResult Function(ProjectsDeleteProject value)? deleteProject,
     TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
     required TResult orElse(),
   }) {
     if (started != null) {
@@ -287,8 +299,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function(String name, String description) createProject,
-    required TResult Function(String projectId) deleteProject,
     required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
   }) {
     return createProject(name, description);
   }
@@ -298,8 +311,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function(String name, String description)? createProject,
-    TResult? Function(String projectId)? deleteProject,
     TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
   }) {
     return createProject?.call(name, description);
   }
@@ -309,8 +323,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function(String name, String description)? createProject,
-    TResult Function(String projectId)? deleteProject,
     TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
     required TResult orElse(),
   }) {
     if (createProject != null) {
@@ -324,8 +339,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult map<TResult extends Object?>({
     required TResult Function(ProjectsStarted value) started,
     required TResult Function(ProjectsCreateProject value) createProject,
-    required TResult Function(ProjectsDeleteProject value) deleteProject,
     required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
   }) {
     return createProject(this);
   }
@@ -335,8 +351,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProjectsStarted value)? started,
     TResult? Function(ProjectsCreateProject value)? createProject,
-    TResult? Function(ProjectsDeleteProject value)? deleteProject,
     TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
   }) {
     return createProject?.call(this);
   }
@@ -346,8 +363,9 @@ class _$ProjectsCreateProjectImpl implements ProjectsCreateProject {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProjectsStarted value)? started,
     TResult Function(ProjectsCreateProject value)? createProject,
-    TResult Function(ProjectsDeleteProject value)? deleteProject,
     TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
     required TResult orElse(),
   }) {
     if (createProject != null) {
@@ -369,6 +387,167 @@ abstract class ProjectsCreateProject implements ProjectsEvent {
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   _$$ProjectsCreateProjectImplCopyWith<_$ProjectsCreateProjectImpl>
+      get copyWith => throw _privateConstructorUsedError;
+}
+
+/// @nodoc
+abstract class _$$ProjectsUpdateProjectImplCopyWith<$Res> {
+  factory _$$ProjectsUpdateProjectImplCopyWith(
+          _$ProjectsUpdateProjectImpl value,
+          $Res Function(_$ProjectsUpdateProjectImpl) then) =
+      __$$ProjectsUpdateProjectImplCopyWithImpl<$Res>;
+  @useResult
+  $Res call({Project project});
+}
+
+/// @nodoc
+class __$$ProjectsUpdateProjectImplCopyWithImpl<$Res>
+    extends _$ProjectsEventCopyWithImpl<$Res, _$ProjectsUpdateProjectImpl>
+    implements _$$ProjectsUpdateProjectImplCopyWith<$Res> {
+  __$$ProjectsUpdateProjectImplCopyWithImpl(_$ProjectsUpdateProjectImpl _value,
+      $Res Function(_$ProjectsUpdateProjectImpl) _then)
+      : super(_value, _then);
+
+  /// Create a copy of ProjectsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @pragma('vm:prefer-inline')
+  @override
+  $Res call({
+    Object? project = null,
+  }) {
+    return _then(_$ProjectsUpdateProjectImpl(
+      null == project
+          ? _value.project
+          : project // ignore: cast_nullable_to_non_nullable
+              as Project,
+    ));
+  }
+}
+
+/// @nodoc
+
+class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
+  const _$ProjectsUpdateProjectImpl(this.project);
+
+  @override
+  final Project project;
+
+  @override
+  String toString() {
+    return 'ProjectsEvent.updateProject(project: $project)';
+  }
+
+  @override
+  bool operator ==(Object other) {
+    return identical(this, other) ||
+        (other.runtimeType == runtimeType &&
+            other is _$ProjectsUpdateProjectImpl &&
+            (identical(other.project, project) || other.project == project));
+  }
+
+  @override
+  int get hashCode => Object.hash(runtimeType, project);
+
+  /// Create a copy of ProjectsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  @override
+  @pragma('vm:prefer-inline')
+  _$$ProjectsUpdateProjectImplCopyWith<_$ProjectsUpdateProjectImpl>
+      get copyWith => __$$ProjectsUpdateProjectImplCopyWithImpl<
+          _$ProjectsUpdateProjectImpl>(this, _$identity);
+
+  @override
+  @optionalTypeArgs
+  TResult when<TResult extends Object?>({
+    required TResult Function() started,
+    required TResult Function(String name, String description) createProject,
+    required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
+  }) {
+    return updateProject(project);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? whenOrNull<TResult extends Object?>({
+    TResult? Function()? started,
+    TResult? Function(String name, String description)? createProject,
+    TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
+  }) {
+    return updateProject?.call(project);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeWhen<TResult extends Object?>({
+    TResult Function()? started,
+    TResult Function(String name, String description)? createProject,
+    TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
+    required TResult orElse(),
+  }) {
+    if (updateProject != null) {
+      return updateProject(project);
+    }
+    return orElse();
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult map<TResult extends Object?>({
+    required TResult Function(ProjectsStarted value) started,
+    required TResult Function(ProjectsCreateProject value) createProject,
+    required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
+  }) {
+    return updateProject(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult? mapOrNull<TResult extends Object?>({
+    TResult? Function(ProjectsStarted value)? started,
+    TResult? Function(ProjectsCreateProject value)? createProject,
+    TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
+  }) {
+    return updateProject?.call(this);
+  }
+
+  @override
+  @optionalTypeArgs
+  TResult maybeMap<TResult extends Object?>({
+    TResult Function(ProjectsStarted value)? started,
+    TResult Function(ProjectsCreateProject value)? createProject,
+    TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
+    required TResult orElse(),
+  }) {
+    if (updateProject != null) {
+      return updateProject(this);
+    }
+    return orElse();
+  }
+}
+
+abstract class ProjectsUpdateProject implements ProjectsEvent {
+  const factory ProjectsUpdateProject(final Project project) =
+      _$ProjectsUpdateProjectImpl;
+
+  Project get project;
+
+  /// Create a copy of ProjectsEvent
+  /// with the given fields replaced by the non-null parameter values.
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  _$$ProjectsUpdateProjectImplCopyWith<_$ProjectsUpdateProjectImpl>
       get copyWith => throw _privateConstructorUsedError;
 }
 
@@ -445,8 +624,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function(String name, String description) createProject,
-    required TResult Function(String projectId) deleteProject,
     required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
   }) {
     return deleteProject(projectId);
   }
@@ -456,8 +636,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function(String name, String description)? createProject,
-    TResult? Function(String projectId)? deleteProject,
     TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
   }) {
     return deleteProject?.call(projectId);
   }
@@ -467,8 +648,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function(String name, String description)? createProject,
-    TResult Function(String projectId)? deleteProject,
     TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
     required TResult orElse(),
   }) {
     if (deleteProject != null) {
@@ -482,8 +664,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult map<TResult extends Object?>({
     required TResult Function(ProjectsStarted value) started,
     required TResult Function(ProjectsCreateProject value) createProject,
-    required TResult Function(ProjectsDeleteProject value) deleteProject,
     required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
   }) {
     return deleteProject(this);
   }
@@ -493,8 +676,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProjectsStarted value)? started,
     TResult? Function(ProjectsCreateProject value)? createProject,
-    TResult? Function(ProjectsDeleteProject value)? deleteProject,
     TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
   }) {
     return deleteProject?.call(this);
   }
@@ -504,8 +688,9 @@ class _$ProjectsDeleteProjectImpl implements ProjectsDeleteProject {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProjectsStarted value)? started,
     TResult Function(ProjectsCreateProject value)? createProject,
-    TResult Function(ProjectsDeleteProject value)? deleteProject,
     TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
     required TResult orElse(),
   }) {
     if (deleteProject != null) {
@@ -529,21 +714,20 @@ abstract class ProjectsDeleteProject implements ProjectsEvent {
 }
 
 /// @nodoc
-abstract class _$$ProjectsUpdateProjectImplCopyWith<$Res> {
-  factory _$$ProjectsUpdateProjectImplCopyWith(
-          _$ProjectsUpdateProjectImpl value,
-          $Res Function(_$ProjectsUpdateProjectImpl) then) =
-      __$$ProjectsUpdateProjectImplCopyWithImpl<$Res>;
+abstract class _$$ProjectsAddMemberImplCopyWith<$Res> {
+  factory _$$ProjectsAddMemberImplCopyWith(_$ProjectsAddMemberImpl value,
+          $Res Function(_$ProjectsAddMemberImpl) then) =
+      __$$ProjectsAddMemberImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({Project project});
+  $Res call({String projectId, String userId});
 }
 
 /// @nodoc
-class __$$ProjectsUpdateProjectImplCopyWithImpl<$Res>
-    extends _$ProjectsEventCopyWithImpl<$Res, _$ProjectsUpdateProjectImpl>
-    implements _$$ProjectsUpdateProjectImplCopyWith<$Res> {
-  __$$ProjectsUpdateProjectImplCopyWithImpl(_$ProjectsUpdateProjectImpl _value,
-      $Res Function(_$ProjectsUpdateProjectImpl) _then)
+class __$$ProjectsAddMemberImplCopyWithImpl<$Res>
+    extends _$ProjectsEventCopyWithImpl<$Res, _$ProjectsAddMemberImpl>
+    implements _$$ProjectsAddMemberImplCopyWith<$Res> {
+  __$$ProjectsAddMemberImplCopyWithImpl(_$ProjectsAddMemberImpl _value,
+      $Res Function(_$ProjectsAddMemberImpl) _then)
       : super(_value, _then);
 
   /// Create a copy of ProjectsEvent
@@ -551,59 +735,69 @@ class __$$ProjectsUpdateProjectImplCopyWithImpl<$Res>
   @pragma('vm:prefer-inline')
   @override
   $Res call({
-    Object? project = null,
+    Object? projectId = null,
+    Object? userId = null,
   }) {
-    return _then(_$ProjectsUpdateProjectImpl(
-      null == project
-          ? _value.project
-          : project // ignore: cast_nullable_to_non_nullable
-              as Project,
+    return _then(_$ProjectsAddMemberImpl(
+      null == projectId
+          ? _value.projectId
+          : projectId // ignore: cast_nullable_to_non_nullable
+              as String,
+      null == userId
+          ? _value.userId
+          : userId // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
 
 /// @nodoc
 
-class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
-  const _$ProjectsUpdateProjectImpl(this.project);
+class _$ProjectsAddMemberImpl implements ProjectsAddMember {
+  const _$ProjectsAddMemberImpl(this.projectId, this.userId);
 
   @override
-  final Project project;
+  final String projectId;
+  @override
+  final String userId;
 
   @override
   String toString() {
-    return 'ProjectsEvent.updateProject(project: $project)';
+    return 'ProjectsEvent.addMember(projectId: $projectId, userId: $userId)';
   }
 
   @override
   bool operator ==(Object other) {
     return identical(this, other) ||
         (other.runtimeType == runtimeType &&
-            other is _$ProjectsUpdateProjectImpl &&
-            (identical(other.project, project) || other.project == project));
+            other is _$ProjectsAddMemberImpl &&
+            (identical(other.projectId, projectId) ||
+                other.projectId == projectId) &&
+            (identical(other.userId, userId) || other.userId == userId));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, project);
+  int get hashCode => Object.hash(runtimeType, projectId, userId);
 
   /// Create a copy of ProjectsEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
   @override
   @pragma('vm:prefer-inline')
-  _$$ProjectsUpdateProjectImplCopyWith<_$ProjectsUpdateProjectImpl>
-      get copyWith => __$$ProjectsUpdateProjectImplCopyWithImpl<
-          _$ProjectsUpdateProjectImpl>(this, _$identity);
+  _$$ProjectsAddMemberImplCopyWith<_$ProjectsAddMemberImpl> get copyWith =>
+      __$$ProjectsAddMemberImplCopyWithImpl<_$ProjectsAddMemberImpl>(
+          this, _$identity);
 
   @override
   @optionalTypeArgs
   TResult when<TResult extends Object?>({
     required TResult Function() started,
     required TResult Function(String name, String description) createProject,
-    required TResult Function(String projectId) deleteProject,
     required TResult Function(Project project) updateProject,
+    required TResult Function(String projectId) deleteProject,
+    required TResult Function(String projectId, String userId) addMember,
   }) {
-    return updateProject(project);
+    return addMember(projectId, userId);
   }
 
   @override
@@ -611,10 +805,11 @@ class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? started,
     TResult? Function(String name, String description)? createProject,
-    TResult? Function(String projectId)? deleteProject,
     TResult? Function(Project project)? updateProject,
+    TResult? Function(String projectId)? deleteProject,
+    TResult? Function(String projectId, String userId)? addMember,
   }) {
-    return updateProject?.call(project);
+    return addMember?.call(projectId, userId);
   }
 
   @override
@@ -622,12 +817,13 @@ class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? started,
     TResult Function(String name, String description)? createProject,
-    TResult Function(String projectId)? deleteProject,
     TResult Function(Project project)? updateProject,
+    TResult Function(String projectId)? deleteProject,
+    TResult Function(String projectId, String userId)? addMember,
     required TResult orElse(),
   }) {
-    if (updateProject != null) {
-      return updateProject(project);
+    if (addMember != null) {
+      return addMember(projectId, userId);
     }
     return orElse();
   }
@@ -637,10 +833,11 @@ class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
   TResult map<TResult extends Object?>({
     required TResult Function(ProjectsStarted value) started,
     required TResult Function(ProjectsCreateProject value) createProject,
-    required TResult Function(ProjectsDeleteProject value) deleteProject,
     required TResult Function(ProjectsUpdateProject value) updateProject,
+    required TResult Function(ProjectsDeleteProject value) deleteProject,
+    required TResult Function(ProjectsAddMember value) addMember,
   }) {
-    return updateProject(this);
+    return addMember(this);
   }
 
   @override
@@ -648,10 +845,11 @@ class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
   TResult? mapOrNull<TResult extends Object?>({
     TResult? Function(ProjectsStarted value)? started,
     TResult? Function(ProjectsCreateProject value)? createProject,
-    TResult? Function(ProjectsDeleteProject value)? deleteProject,
     TResult? Function(ProjectsUpdateProject value)? updateProject,
+    TResult? Function(ProjectsDeleteProject value)? deleteProject,
+    TResult? Function(ProjectsAddMember value)? addMember,
   }) {
-    return updateProject?.call(this);
+    return addMember?.call(this);
   }
 
   @override
@@ -659,26 +857,28 @@ class _$ProjectsUpdateProjectImpl implements ProjectsUpdateProject {
   TResult maybeMap<TResult extends Object?>({
     TResult Function(ProjectsStarted value)? started,
     TResult Function(ProjectsCreateProject value)? createProject,
-    TResult Function(ProjectsDeleteProject value)? deleteProject,
     TResult Function(ProjectsUpdateProject value)? updateProject,
+    TResult Function(ProjectsDeleteProject value)? deleteProject,
+    TResult Function(ProjectsAddMember value)? addMember,
     required TResult orElse(),
   }) {
-    if (updateProject != null) {
-      return updateProject(this);
+    if (addMember != null) {
+      return addMember(this);
     }
     return orElse();
   }
 }
 
-abstract class ProjectsUpdateProject implements ProjectsEvent {
-  const factory ProjectsUpdateProject(final Project project) =
-      _$ProjectsUpdateProjectImpl;
+abstract class ProjectsAddMember implements ProjectsEvent {
+  const factory ProjectsAddMember(final String projectId, final String userId) =
+      _$ProjectsAddMemberImpl;
 
-  Project get project;
+  String get projectId;
+  String get userId;
 
   /// Create a copy of ProjectsEvent
   /// with the given fields replaced by the non-null parameter values.
   @JsonKey(includeFromJson: false, includeToJson: false)
-  _$$ProjectsUpdateProjectImplCopyWith<_$ProjectsUpdateProjectImpl>
-      get copyWith => throw _privateConstructorUsedError;
+  _$$ProjectsAddMemberImplCopyWith<_$ProjectsAddMemberImpl> get copyWith =>
+      throw _privateConstructorUsedError;
 }

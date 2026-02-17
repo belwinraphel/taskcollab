@@ -3,7 +3,7 @@ import '../models/project_model.dart';
 import '../../../../core/error/exceptions.dart';
 
 abstract class ProjectRemoteDataSource {
-  Stream<List<ProjectModel>> getProjects();
+  Stream<List<ProjectModel>> getProjects(String userId);
   Future<ProjectModel> createProject(
       String name, String description, String ownerId);
   Future<void> updateProject(ProjectModel project);
@@ -16,9 +16,10 @@ class ProjectRemoteDataSourceImpl implements ProjectRemoteDataSource {
   ProjectRemoteDataSourceImpl(this.firestore);
 
   @override
-  Stream<List<ProjectModel>> getProjects() {
+  Stream<List<ProjectModel>> getProjects(String userId) {
     return firestore
         .collection('projects')
+        .where('memberIds', arrayContains: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
         .map((snapshot) => snapshot.docs

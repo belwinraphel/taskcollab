@@ -4,7 +4,6 @@ import '../../../../core/error/failures.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../repositories/task_repository.dart';
 
-
 class DeleteTask implements UseCase<void, DeleteTaskParams> {
   final TaskRepository repository;
 
@@ -12,15 +11,16 @@ class DeleteTask implements UseCase<void, DeleteTaskParams> {
 
   @override
   Future<Either<Failure, void>> call(DeleteTaskParams params) async {
-    return await repository.deleteTask(params.taskId);
+    return await repository.deleteTask(params.projectId, params.taskId);
   }
 }
 
 class DeleteTaskParams extends Equatable {
   final String taskId;
+  final String projectId;
 
-  const DeleteTaskParams({required this.taskId});
+  const DeleteTaskParams({required this.taskId, required this.projectId});
 
   @override
-  List<Object> get props => [taskId];
+  List<Object> get props => [taskId, projectId];
 }

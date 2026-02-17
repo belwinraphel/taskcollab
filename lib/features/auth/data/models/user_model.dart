@@ -6,6 +6,7 @@ class UserModel extends UserEntity {
     required super.id,
     required super.email,
     super.displayName,
+    super.photoUrl,
   });
 
   factory UserModel.fromFirebase(firebase_auth.User user) {
@@ -13,6 +14,7 @@ class UserModel extends UserEntity {
       id: user.uid,
       email: user.email ?? '',
       displayName: user.displayName,
+      photoUrl: user.photoURL,
     );
   }
 
@@ -21,6 +23,7 @@ class UserModel extends UserEntity {
       id: json['id'],
       email: json['email'],
       displayName: json['displayName'],
+      photoUrl: json['photoUrl'],
     );
   }
 
@@ -29,6 +32,7 @@ class UserModel extends UserEntity {
       'id': id,
       'email': email,
       'displayName': displayName,
+      'photoUrl': photoUrl,
     };
   }
 }

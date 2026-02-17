@@ -1,5 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../../features/users/domain/entities/user.dart';
+import '../../../../features/users/presentation/bloc/users_bloc.dart';
+import '../../../../features/users/presentation/bloc/users_event.dart';
+import '../../../../features/users/presentation/bloc/users_state.dart';
+import '../../../../features/users/presentation/delegates/user_search_delegate.dart';
 import '../../domain/entities/project.dart';
 import '../bloc/projects_bloc.dart';
 import '../bloc/projects_event.dart';
@@ -17,6 +23,8 @@ class _AddEditProjectDialogState extends State<AddEditProjectDialog> {
   final _formKey = GlobalKey<FormState>();
   late TextEditingController _nameController;
   late TextEditingController _descriptionController;
+  final _usersBloc = getIt<UsersBloc>();
+  List<UserEntity> _members = [];
 
   @override
   void initState() {
@@ -24,12 +32,17 @@ class _AddEditProjectDialogState extends State<AddEditProjectDialog> {
     _nameController = TextEditingController(text: widget.project?.name ?? '');
     _descriptionController =
         TextEditingController(text: widget.project?.description ?? '');
+
+    if (widget.project != null && widget.project!.memberIds.isNotEmpty) {
+      _usersBloc.add(UsersEvent.getUsersByIds(widget.project!.memberIds));
+    }
   }
 
   @override
   void dispose() {
     _nameController.dispose();
     _descriptionController.dispose();
+    _usersBloc.close();
     super.dispose();
   }
 
@@ -66,6 +79,85 @@ class _AddEditProjectDialogState extends State<AddEditProjectDialog> {
               ),
               maxLines: 3,
             ),
+            const SizedBox(height: 16),
+            if (isEditing) ...[
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  const Text('Members',
+                      style: TextStyle(fontWeight: FontWeight.bold)),
+                  IconButton(
+                    icon: const Icon(Icons.person_add),
+                    onPressed: () async {
+                      final UserEntity? selectedUser =
+                          await showSearch<UserEntity?>(
+                        context: context,
+                        delegate: UserSearchDelegate(),
+                      );
+                      if (selectedUser != null) {
+                        setState(() {
+                          if (!_members.any((m) => m.id == selectedUser.id)) {
+                            _members.add(selectedUser);
+                          }
+                        });
+                      }
+                    },
+                  ),
+                ],
+              ),
+              const SizedBox(height: 8),
+              BlocProvider.value(
+                value: _usersBloc,
+                child: BlocListener<UsersBloc, UsersState>(
+                  listener: (context, state) {
+                    state.mapOrNull(
+                      loaded: (loadedState) {
+                        setState(() {
+                          // Merge loaded users, avoiding duplicates if any logic conflict
+                          // But mainly we want to initialize _members from this if it's the first load
+                          // For simplicity, let's just add them if not present.
+                          for (var user in loadedState.users) {
+                            if (!_members.any((m) => m.id == user.id)) {
+                              _members.add(user);
+                            }
+                          }
+                        });
+                      },
+                    );
+                  },
+                  child: Container(
+                    height: 150,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: Colors.grey),
+                      borderRadius: BorderRadius.circular(4),
+                    ),
+                    child: _members.isEmpty
+                        ? const Center(child: Text('No members yet'))
+                        : ListView.builder(
+                            itemCount: _members.length,
+                            itemBuilder: (context, index) {
+                              final member = _members[index];
+                              return ListTile(
+                                leading: CircleAvatar(
+                                  child: Text(member.email[0].toUpperCase()),
+                                ),
+                                title: Text(member.displayName ?? member.email),
+                                subtitle: Text(member.email),
+                                trailing: IconButton(
+                                  icon: const Icon(Icons.remove_circle_outline),
+                                  onPressed: () {
+                                    setState(() {
+                                      _members.removeAt(index);
+                                    });
+                                  },
+                                ),
+                              );
+                            },
+                          ),
+                  ),
+                ),
+              ),
+            ],
           ],
         ),
       ),
@@ -100,7 +192,7 @@ class _AddEditProjectDialogState extends State<AddEditProjectDialog> {
                   name: _nameController.text,
                   description: _descriptionController.text,
                   ownerId: widget.project!.ownerId,
-                  memberIds: widget.project!.memberIds,
+                  memberIds: _members.map((e) => e.id).toList(),
                   createdAt: widget.project!.createdAt,
                 );
                 context.read<ProjectsBloc>().add(

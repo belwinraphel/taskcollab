@@ -1,8 +1,9 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entities/task.dart';
 import '../../domain/usecases/create_task.dart';
 import '../../domain/usecases/get_tasks.dart';
 import '../../domain/usecases/update_task.dart';
-import '../../domain/usecases/delete_task.dart'; // Need to create this usecase
+import '../../domain/usecases/delete_task.dart';
 import 'tasks_event.dart';
 import 'tasks_state.dart';
 
@@ -26,6 +27,7 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
     on<TasksCreateTask>(_onCreateTask);
     on<TasksUpdateTask>(_onUpdateTask);
     on<TasksDeleteTask>(_onDeleteTask);
+    on<TasksFilterChanged>(_onFilterChanged);
   }
 
   @override
@@ -43,7 +45,13 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
       (stream) async {
         await emit.forEach(
           stream,
-          onData: (tasks) => TasksState.loaded(tasks),
+          onData: (tasks) {
+            var filter = TaskStatus.todo;
+            if (state is TasksLoaded) {
+              filter = (state as TasksLoaded).currentFilter;
+            }
+            return TasksState.loaded(tasks, currentFilter: filter);
+          },
           onError: (e, s) => TasksState.error(e.toString()),
         );
       },
@@ -71,10 +79,18 @@ class TasksBloc extends Bloc<TasksEvent, TasksState> {
 
   Future<void> _onDeleteTask(
       TasksDeleteTask event, Emitter<TasksState> emit) async {
-    final result = await deleteTask(DeleteTaskParams(taskId: event.taskId));
+    final result = await deleteTask(
+        DeleteTaskParams(projectId: event.projectId, taskId: event.taskId));
     result.fold(
       (failure) => emit(TasksState.error(failure.message)),
       (_) {}, // Success
     );
+  }
+
+  void _onFilterChanged(TasksFilterChanged event, Emitter<TasksState> emit) {
+    if (state is TasksLoaded) {
+      final currentState = state as TasksLoaded;
+      emit(currentState.copyWith(currentFilter: event.filter));
+    }
   }
 }
