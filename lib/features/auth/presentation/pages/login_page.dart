@@ -7,6 +7,8 @@ import '../bloc/auth_event.dart';
 import '../bloc/auth_state.dart';
 import '../../../../core/error/auth_failure.dart';
 
+import '../../../../core/utils/validators.dart';
+
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -15,6 +17,7 @@ class LoginPage extends StatefulWidget {
 }
 
 class _LoginPageState extends State<LoginPage> {
+  final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
   bool _isLogin = true;
@@ -27,10 +30,10 @@ class _LoginPageState extends State<LoginPage> {
   }
 
   void _onSubmit() {
-    final email = _emailController.text;
-    final password = _passwordController.text;
+    if (!_formKey.currentState!.validate()) return;
 
-    if (email.isEmpty || password.isEmpty) return;
+    final email = _emailController.text.trim();
+    final password = _passwordController.text;
 
     if (_isLogin) {
       context.read<AuthBloc>().add(AuthEvent.loginRequested(email, password));
@@ -62,37 +65,48 @@ class _LoginPageState extends State<LoginPage> {
         builder: (context, state) {
           return Padding(
             padding: const EdgeInsets.all(16.0),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                TextField(
-                  controller: _emailController,
-                  decoration: const InputDecoration(labelText: 'Email'),
-                ),
-                TextField(
-                  controller: _passwordController,
-                  decoration: const InputDecoration(labelText: 'Password'),
-                  obscureText: true,
-                ),
-                const SizedBox(height: 16),
-                if (state is AuthLoading)
-                  const CircularProgressIndicator()
-                else
-                  ElevatedButton(
-                    onPressed: _onSubmit,
-                    child: Text(_isLogin ? 'Login' : 'Register'),
+            child: Form(
+              key: _formKey,
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  TextFormField(
+                    controller: _emailController,
+                    decoration: const InputDecoration(labelText: 'Email'),
+                    validator: Validators.email,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    keyboardType: TextInputType.emailAddress,
                   ),
-                TextButton(
-                  onPressed: () {
-                    setState(() {
-                      _isLogin = !_isLogin;
-                    });
-                  },
-                  child: Text(_isLogin
-                      ? 'Create an account'
-                      : 'Already have an account? Login'),
-                ),
-              ],
+                  const SizedBox(height: 16),
+                  TextFormField(
+                    controller: _passwordController,
+                    decoration: const InputDecoration(labelText: 'Password'),
+                    obscureText: true,
+                    validator: (value) => Validators.required(value,
+                        errorText: 'Password is required'),
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                  ),
+                  const SizedBox(height: 24),
+                  if (state
+                      is AuthLoading) // Assuming AuthLoading is a valid state check
+                    const CircularProgressIndicator()
+                  else
+                    ElevatedButton(
+                      onPressed: _onSubmit,
+                      child: Text(_isLogin ? 'Login' : 'Register'),
+                    ),
+                  TextButton(
+                    onPressed: () {
+                      setState(() {
+                        _isLogin = !_isLogin;
+                      });
+                    },
+                    child: Text(_isLogin
+                        ? 'Create an account'
+                        : 'Already have an account? Login'),
+                  ),
+                ],
+              ),
             ),
           );
         },

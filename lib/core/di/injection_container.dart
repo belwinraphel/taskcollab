@@ -36,6 +36,19 @@ import '../../features/users/data/datasources/user_remote_data_source.dart';
 import '../../features/users/data/repositories/user_repository_impl.dart';
 import '../../features/users/domain/repositories/user_repository.dart';
 import '../../features/users/presentation/bloc/users_bloc.dart';
+import '../../features/profile/data/datasources/profile_remote_data_source.dart';
+import '../../features/profile/data/repositories/profile_repository_impl.dart';
+import '../../features/profile/domain/repositories/profile_repository.dart';
+import '../../features/profile/domain/usecases/get_profile.dart';
+import '../../features/profile/domain/usecases/update_profile.dart';
+import '../../features/profile/presentation/bloc/profile_bloc.dart';
+import '../../features/notifications/data/datasources/notification_remote_data_source.dart';
+import '../../features/notifications/data/repositories/notification_repository_impl.dart';
+import '../../features/notifications/domain/repositories/notification_repository.dart';
+import '../../features/notifications/domain/usecases/get_notifications.dart';
+import '../../features/notifications/domain/usecases/mark_notification_as_read.dart';
+import '../../features/notifications/domain/usecases/create_notification.dart';
+import '../../features/notifications/presentation/bloc/notifications_bloc.dart';
 
 final getIt = GetIt.instance;
 
@@ -61,7 +74,8 @@ Future<void> init() async {
   getIt.registerLazySingleton<AuthRepository>(
     () => AuthRepositoryImpl(
       remoteDataSource: getIt(),
-      localDataSource: getIt(), userRepository: getIt(),
+      localDataSource: getIt(),
+      userRepository: getIt(),
     ),
   );
 
@@ -121,6 +135,47 @@ Future<void> init() async {
     () => UsersBloc(userRepository: getIt()),
   );
 
+  // Features - Profile
+  // Data sources
+  getIt.registerLazySingleton<ProfileRemoteDataSource>(
+    () => ProfileRemoteDataSourceImpl(getIt()),
+  );
+  // Repository
+  getIt.registerLazySingleton<ProfileRepository>(
+    () => ProfileRepositoryImpl(getIt()),
+  );
+  // Use cases
+  getIt.registerLazySingleton(() => GetProfile(getIt()));
+  getIt.registerLazySingleton(() => UpdateProfile(getIt()));
+  // Bloc
+  getIt.registerFactory(
+    () => ProfileBloc(
+      getProfile: getIt(),
+      updateProfile: getIt(),
+    ),
+  );
+
+  // Features - Notifications
+  // Data sources
+  getIt.registerLazySingleton<NotificationRemoteDataSource>(
+    () => NotificationRemoteDataSourceImpl(getIt()),
+  );
+  // Repository
+  getIt.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(getIt()),
+  );
+  // Use cases
+  getIt.registerLazySingleton(() => GetNotifications(getIt()));
+  getIt.registerLazySingleton(() => MarkNotificationAsRead(getIt()));
+  getIt.registerLazySingleton(() => CreateNotification(getIt()));
+  // Bloc
+  getIt.registerFactory(
+    () => NotificationsBloc(
+      getNotifications: getIt(),
+      markNotificationAsRead: getIt(),
+    ),
+  );
+
   // Features - Tasks
   // ...
   // Core Services
@@ -159,6 +214,7 @@ Future<void> init() async {
       updateTask: getIt(),
       deleteTask: getIt(),
       taskNotificationListener: getIt(),
+      createNotification: getIt(),
     ),
   );
 }

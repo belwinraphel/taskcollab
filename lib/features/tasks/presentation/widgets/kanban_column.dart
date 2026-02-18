@@ -1,13 +1,16 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:task_collab_app/features/users/presentation/bloc/users_bloc.dart';
+import 'package:task_collab_app/features/users/presentation/bloc/users_state.dart';
 import '../../domain/entities/task.dart';
-import 'task_board_theme.dart';
-import 'task_card.dart';
+import 'kanban_task_card.dart';
 
 class KanbanColumn extends StatelessWidget {
   final String title;
   final TaskStatus status;
   final List<TaskEntity> tasks;
   final Function(TaskEntity) onTaskTap;
+  final Function(TaskEntity)? onTaskDropped;
 
   const KanbanColumn({
     super.key,
@@ -15,33 +18,114 @@ class KanbanColumn extends StatelessWidget {
     required this.status,
     required this.tasks,
     required this.onTaskTap,
+    this.onTaskDropped,
   });
 
   @override
   Widget build(BuildContext context) {
-    final statusTasks = tasks.where((t) => t.status == status).toList();
+    return DragTarget<TaskEntity>(
+      onWillAccept: (task) => task != null && task.status != status,
+      onAccept: (task) {
+        if (onTaskDropped != null) {
+          onTaskDropped!(task);
+        }
+      },
+      builder: (context, candidateData, rejectedData) {
+        return Container(
+          width: 300,
+          margin: const EdgeInsets.symmetric(horizontal: 8),
+          decoration: BoxDecoration(
+            color: candidateData.isNotEmpty
+                ? _getStatusColor(status).withOpacity(0.1)
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+            border: candidateData.isNotEmpty
+                ? Border.all(color: _getStatusColor(status), width: 2)
+                : null,
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              _buildHeader(tasks.length),
+              const SizedBox(height: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                padding: const EdgeInsets.all(8),
+                child: BlocBuilder<UsersBloc, UsersState>(
+                  builder: (context, state) {
+                    final users = state.maybeWhen(
+                      loaded: (users) => users,
+                      orElse: () => null,
+                    );
 
-    return Container(
-      width: 320, // Fixed width for horizontal scrolling
-      margin: const EdgeInsets.symmetric(horizontal: 12),
-      // Use constrained constraints to avoid unbounded height errors if nested incorrectly
-      constraints:
-          BoxConstraints(maxHeight: MediaQuery.of(context).size.height),
-      child: Column(
+                    return ListView.separated(
+                      shrinkWrap: true,
+                      padding: const EdgeInsets.only(bottom: 80),
+                      itemCount: tasks.length,
+                      separatorBuilder: (context, index) =>
+                          const SizedBox(height: 12),
+                      itemBuilder: (context, index) {
+                        return KanbanTaskCard(
+                          task: tasks[index],
+                          onTap: () => onTaskTap(tasks[index]),
+                          users: users,
+                        );
+                      },
+                    );
+                  },
+                ),
+              ),
+            ],
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildHeader(int count) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 4.0),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildHeader(statusTasks.length),
-          const SizedBox(height: 16),
-          Expanded(
-            child: ListView.separated(
-              padding: const EdgeInsets.only(bottom: 80),
-              itemCount: statusTasks.length,
-              separatorBuilder: (context, index) => const SizedBox(height: 12),
-              itemBuilder: (context, index) {
-                return TaskCard(
-                  task: statusTasks[index],
-                  onTap: () => onTaskTap(statusTasks[index]),
-                );
-              },
+          Row(
+            children: [
+              Container(
+                width: 12,
+                height: 12,
+                decoration: BoxDecoration(
+                  color: _getStatusColor(status),
+                  borderRadius: BorderRadius.circular(4),
+                ),
+              ),
+              const SizedBox(width: 8),
+              Text(
+                title.toUpperCase(),
+                style: const TextStyle(
+                  fontSize: 14,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF4B5563),
+                  letterSpacing: 0.5,
+                ),
+              ),
+            ],
+          ),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+            decoration: BoxDecoration(
+              color: const Color(0xFFE5E7EB),
+              borderRadius: BorderRadius.circular(10),
+            ),
+            child: Text(
+              '$count',
+              style: const TextStyle(
+                fontSize: 12,
+                fontWeight: FontWeight.bold,
+                color: Color(0xFF6B7280),
+              ),
             ),
           ),
         ],
@@ -49,36 +133,14 @@ class KanbanColumn extends StatelessWidget {
     );
   }
 
-  Widget _buildHeader(int count) {
-    return Row(
-      children: [
-        Text(
-          '$title ($count)'.toUpperCase(),
-          style: TaskBoardTheme.columnHeader,
-        ),
-        const Spacer(),
-        // Simple dot indicator for status color
-        Container(
-          width: 8,
-          height: 8,
-          decoration: BoxDecoration(
-            color: _getStatusColor(status),
-            shape: BoxShape.circle,
-          ),
-        ),
-      ],
-    );
-  }
-
   Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.todo:
-        return TaskBoardTheme.todoColor;
+        return Colors.blue;
       case TaskStatus.inProgress:
-        return TaskBoardTheme.inProgressColor;
-     
+        return Colors.orange;
       case TaskStatus.done:
-        return TaskBoardTheme.doneColor;
+        return Colors.green;
     }
   }
 }

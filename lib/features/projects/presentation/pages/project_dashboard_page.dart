@@ -8,6 +8,10 @@ import '../bloc/projects_event.dart';
 import '../bloc/projects_state.dart';
 import '../widgets/add_edit_project_dialog.dart';
 import '../widgets/project_grid_card.dart';
+import '../../../auth/presentation/bloc/auth_bloc.dart';
+import '../../../auth/presentation/bloc/auth_state.dart';
+import '../../../profile/presentation/pages/settings_page.dart';
+import '../../../notifications/presentation/pages/notifications_page.dart';
 
 class ProjectDashboardPage extends StatelessWidget {
   const ProjectDashboardPage({super.key});
@@ -21,7 +25,7 @@ class ProjectDashboardPage extends StatelessWidget {
         builder: (context) {
           return Scaffold(
             backgroundColor: const Color(0xFFF4F5F9), // Light background
-            appBar: _buildAppBar(),
+            appBar: _buildAppBar(context),
             body: Column(
               children: [
                 _buildSearchBar(),
@@ -115,7 +119,7 @@ class ProjectDashboardPage extends StatelessWidget {
     );
   }
 
-  PreferredSizeWidget _buildAppBar() {
+  PreferredSizeWidget _buildAppBar(BuildContext context) {
     return AppBar(
       title: const Text(
         'My Projects',
@@ -126,13 +130,36 @@ class ProjectDashboardPage extends StatelessWidget {
       actions: [
         IconButton(
           icon: const Icon(Icons.notifications_none, color: Colors.grey),
-          onPressed: () {},
+          onPressed: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const NotificationsPage(),
+              ),
+            );
+          },
         ),
-        const Padding(
-          padding: EdgeInsets.only(right: 16.0),
-          child: CircleAvatar(
-            backgroundColor: Colors.blue,
-            child: Text("U", style: TextStyle(color: Colors.white)),
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: GestureDetector(
+            onTap: () {
+              final authState = context.read<AuthBloc>().state;
+              authState.maybeMap(
+                authenticated: (state) {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => SettingsPage(userId: state.user.id),
+                    ),
+                  );
+                },
+                orElse: () {},
+              );
+            },
+            child: const CircleAvatar(
+              backgroundColor: Colors.blue,
+              child: Text("U", style: TextStyle(color: Colors.white)),
+            ),
           ),
         ),
       ],

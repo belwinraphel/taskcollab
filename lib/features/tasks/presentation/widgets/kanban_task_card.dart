@@ -1,21 +1,25 @@
 import 'package:flutter/material.dart';
+import 'package:task_collab_app/features/users/domain/entities/user.dart';
 import '../../domain/entities/task.dart';
+import 'package:task_collab_app/core/utils/constants.dart';
 
 import 'package:intl/intl.dart';
-import 'dart:math';
 
 class KanbanTaskCard extends StatelessWidget {
   final TaskEntity task;
   final VoidCallback onTap;
+  final List<UserEntity>? users;
 
   const KanbanTaskCard({
     super.key,
     required this.task,
     required this.onTap,
+    this.users,
   });
 
   @override
   Widget build(BuildContext context) {
+    // ... (rest of build method unchanged)
     return Draggable<TaskEntity>(
       data: task,
       feedback: SizedBox(
@@ -39,7 +43,7 @@ class KanbanTaskCard extends StatelessWidget {
   Widget _buildCardContent(BuildContext context) {
     return Card(
       elevation: 2,
-      shadowColor: Colors.black12,
+      shadowColor: KanbanConstants.cardShadow,
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
       child: InkWell(
@@ -49,7 +53,6 @@ class KanbanTaskCard extends StatelessWidget {
           child: Row(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
-              // Colored Indicator Bar
               Container(
                 width: 6,
                 decoration: BoxDecoration(
@@ -72,7 +75,7 @@ class KanbanTaskCard extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.bold,
-                          color: Color(0xFF1D1D1D),
+                          color: KanbanConstants.cardTitle,
                         ),
                       ),
                       const SizedBox(height: 8),
@@ -83,7 +86,7 @@ class KanbanTaskCard extends StatelessWidget {
                         overflow: TextOverflow.ellipsis,
                         style: const TextStyle(
                           fontSize: 13,
-                          color: Color(0xFF757575),
+                          color: KanbanConstants.cardDescription,
                           height: 1.4,
                         ),
                       ),
@@ -107,15 +110,16 @@ class KanbanTaskCard extends StatelessWidget {
     );
   }
 
+  // ... (helper methods unchanged until _buildAssigneeAvatar)
+
   Color _getStatusColor(TaskStatus status) {
     switch (status) {
       case TaskStatus.todo:
-        return Colors.blue;
+        return KanbanConstants.statusTodo;
       case TaskStatus.inProgress:
-        return Colors.green; // Active
-
+        return KanbanConstants.statusInProgress;
       case TaskStatus.done:
-        return Colors.purple;
+        return KanbanConstants.statusDone;
     }
   }
 
@@ -145,14 +149,29 @@ class KanbanTaskCard extends StatelessWidget {
   }
 
   Widget _buildAssigneeAvatar(TaskAssignee assignee) {
-    if (assignee.avatarUrl != null) {
+    // Try to resolve user details if users list is provided
+    String? displayName = assignee.name;
+    String? avatarUrl = assignee.avatarUrl;
+
+    if (users != null) {
+      try {
+        final user = users!.firstWhere((u) => u.id == assignee.id);
+        displayName = user.displayName ?? user.email;
+        avatarUrl = user.photoUrl;
+      } catch (_) {
+        // User not found in provided list, fallback to task entity data
+      }
+    }
+
+    if (avatarUrl != null) {
       return CircleAvatar(
         radius: 14,
-        backgroundImage: NetworkImage(assignee.avatarUrl!),
+        backgroundImage: NetworkImage(avatarUrl),
       );
     }
-    final initials = (assignee.name?.isNotEmpty == true)
-        ? assignee.name![0].toUpperCase()
+
+    final initials = (displayName != null && displayName.isNotEmpty)
+        ? displayName[0].toUpperCase()
         : '?';
     final color = _generateColor(assignee.id);
     return _buildAvatar(initials, color.withOpacity(0.2), color);
@@ -163,7 +182,7 @@ class KanbanTaskCard extends StatelessWidget {
       width: 28,
       height: 28,
       decoration: BoxDecoration(
-        color: Colors.grey[300],
+        color: KanbanConstants.remainingCountBackground,
         shape: BoxShape.circle,
         border: Border.all(color: Colors.white, width: 2),
       ),
@@ -173,7 +192,7 @@ class KanbanTaskCard extends StatelessWidget {
           style: const TextStyle(
             fontSize: 10,
             fontWeight: FontWeight.bold,
-            color: Colors.black54,
+            color: KanbanConstants.avatarRemainingText,
           ),
         ),
       ),
@@ -208,13 +227,14 @@ class KanbanTaskCard extends StatelessWidget {
 
     return Row(
       children: [
-        const Icon(Icons.access_time, size: 14, color: Color(0xFF9CA3AF)),
+        const Icon(Icons.access_time,
+            size: 14, color: KanbanConstants.cardDateText),
         const SizedBox(width: 4),
         Text(
           formattedDate,
           style: const TextStyle(
             fontSize: 12,
-            color: Color(0xFF9CA3AF),
+            color: KanbanConstants.cardDateText,
             fontWeight: FontWeight.w500,
           ),
         ),

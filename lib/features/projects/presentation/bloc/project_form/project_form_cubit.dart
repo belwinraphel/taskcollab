@@ -1,17 +1,36 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../users/domain/repositories/user_repository.dart';
 import '../../../../users/domain/entities/user.dart';
 import '../../../domain/entities/project.dart';
 import 'project_form_state.dart';
 export 'project_form_state.dart';
 
 class ProjectFormCubit extends Cubit<ProjectFormState> {
-  ProjectFormCubit({Project? project})
+  final UserRepository userRepository;
+
+  ProjectFormCubit({Project? project, required this.userRepository})
       : super(ProjectFormState(
           name: project?.name ?? '',
           description: project?.description ?? '',
           isEditing: project != null,
           initialProject: project,
         ));
+
+  Future<void> loadMembers(List<String> ids) async {
+    if (ids.isEmpty) return;
+
+    final result = await userRepository.getUsersByIds(ids);
+    result.fold(
+      (failure) {
+        // Optionally handle error
+      },
+      (users) {
+        if (users.isNotEmpty) {
+          emit(state.copyWith(members: users));
+        }
+      },
+    );
+  }
 
   void nameChanged(String value) {
     emit(state.copyWith(name: value));
@@ -39,7 +58,7 @@ class ProjectFormCubit extends Cubit<ProjectFormState> {
     // Let's assume this is for initial load.
     // Check if we already have members to avoid overwriting user edits if called purely on load?
     // For now, simple set is fine for initialization.
-    if (state.members.isEmpty && users.isNotEmpty) {
+    if (users.isNotEmpty) {
       emit(state.copyWith(members: users));
     }
   }

@@ -1,17 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../../../core/di/injection_container.dart';
+import '../../../users/domain/repositories/user_repository.dart';
 import '../../domain/entities/task.dart';
 import '../bloc/tasks_bloc.dart';
 import '../bloc/tasks_event.dart';
-
-import '../../../users/presentation/bloc/users_bloc.dart';
-import '../../../users/presentation/bloc/users_event.dart';
-import '../../../users/presentation/bloc/users_state.dart';
-import '../../../users/domain/entities/user.dart';
+import '../bloc/task_form/task_form_cubit.dart';
 import '../../../projects/presentation/bloc/projects_bloc.dart';
 import '../../../projects/presentation/bloc/projects_state.dart';
+import '../../../../core/utils/validators.dart';
 
-class AddEditTaskDialog extends StatefulWidget {
+class AddEditTaskDialog extends StatelessWidget {
   final String projectId;
   final TaskEntity? task;
 
@@ -22,42 +21,78 @@ class AddEditTaskDialog extends StatefulWidget {
   });
 
   @override
-  State<AddEditTaskDialog> createState() => _AddEditTaskDialogState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (_) => TaskFormCubit(
+        task: task,
+        userRepository: getIt<UserRepository>(),
+      ),
+      child: _AddEditTaskDialogContent(
+        projectId: projectId,
+        task: task,
+      ),
+    );
+  }
 }
 
-class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
-  final _titleController = TextEditingController();
-  final _descController = TextEditingController();
-  final List<UserEntity> _selectedAssignees = [];
-  DateTime _dueDate = DateTime.now().add(const Duration(days: 7));
+class _AddEditTaskDialogContent extends StatefulWidget {
+  final String projectId;
+  final TaskEntity? task;
+
+  const _AddEditTaskDialogContent({
+    required this.projectId,
+    this.task,
+  });
+
+  @override
+  State<_AddEditTaskDialogContent> createState() =>
+      _AddEditTaskDialogContentState();
+}
+
+class _AddEditTaskDialogContentState extends State<_AddEditTaskDialogContent> {
+  final _formKey = GlobalKey<FormState>();
+  late final TextEditingController _titleController;
+  late final TextEditingController _descController;
+
+  List<String>? _lastMemberIds;
 
   @override
   void initState() {
     super.initState();
-    if (widget.task != null) {
-      _titleController.text = widget.task!.title;
-      _descController.text = widget.task!.description;
-      if (widget.task!.dueDate != null) {
-        _dueDate = widget.task!.dueDate!;
-      }
-      // We will map existing assignees to UserEntities once users are loaded
-      // For now, we rely on _fetchProjectMembers to load users, and then we might need to match IDs
-    }
+    _titleController = TextEditingController(text: widget.task?.title ?? '');
+    _descController =
+        TextEditingController(text: widget.task?.description ?? '');
     _fetchProjectMembers();
   }
 
   void _fetchProjectMembers() {
     final projectsState = context.read<ProjectsBloc>().state;
     if (projectsState is ProjectsLoaded) {
-      final project = projectsState.projects.firstWhere(
-        (p) => p.id == widget.projectId,
-        orElse: () => throw Exception('Project not found'),
-      );
-      if (project.memberIds.isNotEmpty) {
-        context
-            .read<UsersBloc>()
-            .add(UsersEvent.getUsersByIds(project.memberIds));
+      try {
+        final project = projectsState.projects.firstWhere(
+          (p) => p.id == widget.projectId,
+        );
+
+        // Optimization: prevent redundant fetches
+        final currentMemberIds = project.memberIds;
+        if (_lastMemberIds != null &&
+            _lastMemberIds!.length == currentMemberIds.length &&
+            _lastMemberIds!.toSet().containsAll(currentMemberIds)) {
+          return;
+        }
+        _lastMemberIds = List.from(currentMemberIds);
+
+        context.read<TaskFormCubit>().loadProjectMembers(
+              widget.projectId,
+              additionalIds: project.memberIds,
+            );
+      } catch (_) {
+        // Project might not be in the loaded list if filtering etc.
+        // Still try to load assignees if present (handled inside loadProjectMembers)
+        context.read<TaskFormCubit>().loadProjectMembers(widget.projectId);
       }
+    } else {
+      context.read<TaskFormCubit>().loadProjectMembers(widget.projectId);
     }
   }
 
@@ -70,65 +105,107 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
 
   @override
   Widget build(BuildContext context) {
-    return AlertDialog(
-      title: Text(widget.task != null ? 'Edit Task' : 'Create Task'),
-      content: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            TextField(
-              controller: _titleController,
-              decoration: const InputDecoration(labelText: 'Title'),
+    return BlocListener<ProjectsBloc, ProjectsState>(
+      listener: (context, state) {
+        if (state is ProjectsLoaded) {
+          _fetchProjectMembers();
+        }
+      },
+      child: AlertDialog(
+        title: Text(widget.task != null ? 'Edit Task' : 'Create Task'),
+        content: SingleChildScrollView(
+          child: Form(
+            key: _formKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _buildTitleField(),
+                const SizedBox(height: 8),
+                _buildDescriptionField(),
+                const SizedBox(height: 16),
+                _buildPriorityDropdown(),
+                const SizedBox(height: 16),
+                _buildAssigneeSelector(),
+                const SizedBox(height: 16),
+                _buildDatePicker(),
+              ],
             ),
-            const SizedBox(height: 8),
-            TextField(
-              controller: _descController,
-              decoration: const InputDecoration(labelText: 'Description'),
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            _buildAssigneeSelector(),
-            const SizedBox(height: 16),
-            _buildDatePicker(),
-          ],
+          ),
         ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          _buildSaveButton(),
+        ],
       ),
-      actions: [
-        TextButton(
-          onPressed: () => Navigator.pop(context),
-          child: const Text('Cancel'),
-        ),
-        ElevatedButton(
-          onPressed: _saveTask,
-          child: Text(widget.task != null ? 'Save' : 'Create'),
-        ),
-      ],
+    );
+  }
+
+  Widget _buildTitleField() {
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      buildWhen: (previous, current) => previous.title != current.title,
+      builder: (context, state) {
+        return TextFormField(
+          controller: _titleController,
+          decoration: const InputDecoration(labelText: 'Title'),
+          validator: Validators.required,
+          autovalidateMode: AutovalidateMode.onUserInteraction,
+          onChanged: (value) =>
+              context.read<TaskFormCubit>().titleChanged(value),
+        );
+      },
+    );
+  }
+
+  Widget _buildDescriptionField() {
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      buildWhen: (previous, current) =>
+          previous.description != current.description,
+      builder: (context, state) {
+        return TextFormField(
+          controller: _descController,
+          decoration: const InputDecoration(labelText: 'Description'),
+          maxLines: 3,
+          onChanged: (value) =>
+              context.read<TaskFormCubit>().descriptionChanged(value),
+        );
+      },
+    );
+  }
+
+  Widget _buildPriorityDropdown() {
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      buildWhen: (previous, current) => previous.priority != current.priority,
+      builder: (context, state) {
+        return DropdownButtonFormField<TaskPriority>(
+          value: state.priority,
+          decoration: const InputDecoration(labelText: 'Priority'),
+          items: TaskPriority.values.map((priority) {
+            return DropdownMenuItem(
+              value: priority,
+              child: Text(priority.name.toUpperCase()),
+            );
+          }).toList(),
+          onChanged: (value) {
+            if (value != null) {
+              context.read<TaskFormCubit>().priorityChanged(value);
+            }
+          },
+        );
+      },
     );
   }
 
   Widget _buildAssigneeSelector() {
-    return BlocConsumer<UsersBloc, UsersState>(
-      listener: (context, state) {
-        state.whenOrNull(loaded: (users) {
-          if (widget.task != null && _selectedAssignees.isEmpty) {
-            // Restore selected assignees from task
-            final assigneeIds = widget.task!.assignees.map((e) => e.id).toSet();
-            setState(() {
-              _selectedAssignees.addAll(
-                users.where((u) => assigneeIds.contains(u.id)),
-              );
-            });
-          }
-        });
-      },
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      buildWhen: (previous, current) =>
+          previous.availableMembers != current.availableMembers ||
+          previous.assignees != current.assignees,
       builder: (context, state) {
-        final users = state.maybeWhen(
-          loaded: (users) => users,
-          orElse: () => <UserEntity>[],
-        );
-
-        if (users.isEmpty) {
+        if (state.availableMembers.isEmpty) {
           return const SizedBox.shrink();
         }
 
@@ -141,9 +218,8 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
             Wrap(
               spacing: 8.0,
               runSpacing: 4.0,
-              children: users.map((user) {
-                final isSelected =
-                    _selectedAssignees.any((u) => u.id == user.id);
+              children: state.availableMembers.map((user) {
+                final isSelected = state.assignees.any((u) => u.id == user.id);
                 return FilterChip(
                   label: Text(user.displayName ?? user.email),
                   avatar: user.photoUrl != null
@@ -153,13 +229,11 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
                       : null,
                   selected: isSelected,
                   onSelected: (selected) {
-                    setState(() {
-                      if (selected) {
-                        _selectedAssignees.add(user);
-                      } else {
-                        _selectedAssignees.removeWhere((u) => u.id == user.id);
-                      }
-                    });
+                    if (selected) {
+                      context.read<TaskFormCubit>().addAssignee(user);
+                    } else {
+                      context.read<TaskFormCubit>().removeAssignee(user);
+                    }
                   },
                 );
               }).toList(),
@@ -171,34 +245,52 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
   }
 
   Widget _buildDatePicker() {
-    return Row(
-      children: [
-        const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
-        const SizedBox(width: 8),
-        TextButton(
-          onPressed: () async {
-            final picked = await showDatePicker(
-              context: context,
-              initialDate: _dueDate,
-              firstDate: DateTime.now(),
-              lastDate: DateTime.now().add(const Duration(days: 365)),
-            );
-            if (picked != null) {
-              setState(() => _dueDate = picked);
-            }
-          },
-          child: Text(
-            "${_dueDate.day}/${_dueDate.month}/${_dueDate.year}",
-          ),
-        ),
-      ],
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      buildWhen: (previous, current) => previous.dueDate != current.dueDate,
+      builder: (context, state) {
+        final date = state.dueDate ?? DateTime.now();
+        return Row(
+          children: [
+            const Icon(Icons.calendar_today, size: 16, color: Colors.grey),
+            const SizedBox(width: 8),
+            TextButton(
+              onPressed: () async {
+                final picked = await showDatePicker(
+                  context: context,
+                  initialDate: date,
+                  firstDate: DateTime.now(),
+                  lastDate: DateTime.now().add(const Duration(days: 365)),
+                );
+                if (picked != null) {
+                  context.read<TaskFormCubit>().dueDateChanged(picked);
+                }
+              },
+              child: Text(
+                "${date.day}/${date.month}/${date.year}",
+              ),
+            ),
+          ],
+        );
+      },
     );
   }
 
-  void _saveTask() {
-    if (_titleController.text.isEmpty) return;
+  Widget _buildSaveButton() {
+    return BlocBuilder<TaskFormCubit, TaskFormState>(
+      builder: (context, state) {
+        return ElevatedButton(
+          onPressed: () => _saveTask(context, state),
+          child: Text(widget.task != null ? 'Save' : 'Create'),
+        );
+      },
+    );
+  }
 
-    final assignees = _selectedAssignees
+  void _saveTask(BuildContext context, TaskFormState state) {
+    if (!_formKey.currentState!.validate()) return;
+    if (!state.isValid) return;
+
+    final assignees = state.assignees
         .map((u) => TaskAssignee(
               id: u.id,
               name: u.displayName ?? u.email,
@@ -210,12 +302,12 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
       final updatedTask = TaskEntity(
         id: widget.task!.id,
         projectId: widget.projectId,
-        title: _titleController.text,
-        description: _descController.text,
+        title: state.title.trim(),
+        description: state.description.trim(),
         status: widget.task!.status,
-        priority: widget.task!.priority,
+        priority: state.priority,
         assignees: assignees,
-        dueDate: _dueDate,
+        dueDate: state.dueDate,
         comments: widget.task!.comments,
       );
       context.read<TasksBloc>().add(TasksEvent.updateTask(updatedTask));
@@ -223,12 +315,12 @@ class _AddEditTaskDialogState extends State<AddEditTaskDialog> {
       final newTask = TaskEntity(
         id: '',
         projectId: widget.projectId,
-        title: _titleController.text,
-        description: _descController.text,
+        title: state.title.trim(),
+        description: state.description.trim(),
         status: TaskStatus.todo,
-        priority: TaskPriority.medium,
+        priority: state.priority,
         assignees: assignees,
-        dueDate: _dueDate,
+        dueDate: state.dueDate,
         comments: const [],
       );
       context.read<TasksBloc>().add(TasksEvent.createTask(newTask));
