@@ -72,22 +72,27 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
             slivers: [
               _buildSliverAppBar(context, currentTask),
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildStatusAndPriority(currentTask),
-                      const SizedBox(height: 24),
-                      _buildDescriptionSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildAssigneesSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildDateSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildCommentsSection(currentTask),
-                      const SizedBox(height: 80), // Bottom padding for FAB
-                    ],
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusAndPriority(currentTask),
+                          const SizedBox(height: 24),
+                          _buildDescriptionSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildAssigneesSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildDateSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildCommentsSection(currentTask),
+                          const SizedBox(height: 80), // Bottom padding for FAB
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),

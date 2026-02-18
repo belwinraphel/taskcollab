@@ -78,12 +78,19 @@ class _ProjectTaskBoardPageState extends State<ProjectTaskBoardPage> {
                               Center(child: Text('Error: ${state.message}')),
                           loaded: (state) {
                             if (_currentIndex == 0) {
-                              return TaskListView(
-                                state: state,
-                                onTaskTap: (task) =>
-                                    _navigateToTaskDetails(context, task),
-                                onTaskStatusUpdate: (task, status) =>
-                                    _updateTaskStatus(context, task, status),
+                              return Center(
+                                child: ConstrainedBox(
+                                  constraints:
+                                      const BoxConstraints(maxWidth: 800),
+                                  child: TaskListView(
+                                    state: state,
+                                    onTaskTap: (task) =>
+                                        _navigateToTaskDetails(context, task),
+                                    onTaskStatusUpdate: (task, status) =>
+                                        _updateTaskStatus(
+                                            context, task, status),
+                                  ),
+                                ),
                               );
                             } else {
                               return _buildKanbanView(context, state);
