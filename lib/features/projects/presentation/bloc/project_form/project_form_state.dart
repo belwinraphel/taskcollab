@@ -21,7 +21,7 @@ class ProjectFormState extends Equatable {
     this.initialProject,
   });
 
-  bool get isValid => name.isNotEmpty;
+  bool get isValid => name.trim().isNotEmpty;
 
   ProjectFormState copyWith({
     String? name,

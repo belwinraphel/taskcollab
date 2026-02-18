@@ -131,22 +131,8 @@ class __$$ServerErrorImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$ServerErrorImpl implements _ServerError {
-  const _$ServerErrorImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.serverError()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$ServerErrorImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$ServerErrorImpl extends _ServerError {
+  const _$ServerErrorImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -244,8 +230,9 @@ class _$ServerErrorImpl implements _ServerError {
   }
 }
 
-abstract class _ServerError implements AuthFailure {
+abstract class _ServerError extends AuthFailure {
   const factory _ServerError() = _$ServerErrorImpl;
+  const _ServerError._() : super._();
 }
 
 /// @nodoc
@@ -269,22 +256,8 @@ class __$$EmailAlreadyInUseImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$EmailAlreadyInUseImpl implements _EmailAlreadyInUse {
-  const _$EmailAlreadyInUseImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.emailAlreadyInUse()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$EmailAlreadyInUseImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$EmailAlreadyInUseImpl extends _EmailAlreadyInUse {
+  const _$EmailAlreadyInUseImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -382,8 +355,9 @@ class _$EmailAlreadyInUseImpl implements _EmailAlreadyInUse {
   }
 }
 
-abstract class _EmailAlreadyInUse implements AuthFailure {
+abstract class _EmailAlreadyInUse extends AuthFailure {
   const factory _EmailAlreadyInUse() = _$EmailAlreadyInUseImpl;
+  const _EmailAlreadyInUse._() : super._();
 }
 
 /// @nodoc
@@ -411,23 +385,8 @@ class __$$InvalidEmailAndPasswordCombinationImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$InvalidEmailAndPasswordCombinationImpl
-    implements _InvalidEmailAndPasswordCombination {
-  const _$InvalidEmailAndPasswordCombinationImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.invalidEmailAndPasswordCombination()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType &&
-            other is _$InvalidEmailAndPasswordCombinationImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+    extends _InvalidEmailAndPasswordCombination {
+  const _$InvalidEmailAndPasswordCombinationImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -525,9 +484,10 @@ class _$InvalidEmailAndPasswordCombinationImpl
   }
 }
 
-abstract class _InvalidEmailAndPasswordCombination implements AuthFailure {
+abstract class _InvalidEmailAndPasswordCombination extends AuthFailure {
   const factory _InvalidEmailAndPasswordCombination() =
       _$InvalidEmailAndPasswordCombinationImpl;
+  const _InvalidEmailAndPasswordCombination._() : super._();
 }
 
 /// @nodoc
@@ -551,22 +511,8 @@ class __$$NetworkErrorImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$NetworkErrorImpl implements _NetworkError {
-  const _$NetworkErrorImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.networkError()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$NetworkErrorImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$NetworkErrorImpl extends _NetworkError {
+  const _$NetworkErrorImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -664,8 +610,9 @@ class _$NetworkErrorImpl implements _NetworkError {
   }
 }
 
-abstract class _NetworkError implements AuthFailure {
+abstract class _NetworkError extends AuthFailure {
   const factory _NetworkError() = _$NetworkErrorImpl;
+  const _NetworkError._() : super._();
 }
 
 /// @nodoc
@@ -689,22 +636,8 @@ class __$$UserDisabledImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$UserDisabledImpl implements _UserDisabled {
-  const _$UserDisabledImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.userDisabled()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$UserDisabledImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$UserDisabledImpl extends _UserDisabled {
+  const _$UserDisabledImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -802,8 +735,9 @@ class _$UserDisabledImpl implements _UserDisabled {
   }
 }
 
-abstract class _UserDisabled implements AuthFailure {
+abstract class _UserDisabled extends AuthFailure {
   const factory _UserDisabled() = _$UserDisabledImpl;
+  const _UserDisabled._() : super._();
 }
 
 /// @nodoc
@@ -827,22 +761,8 @@ class __$$TokenRevokedImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$TokenRevokedImpl implements _TokenRevoked {
-  const _$TokenRevokedImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.tokenRevoked()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$TokenRevokedImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$TokenRevokedImpl extends _TokenRevoked {
+  const _$TokenRevokedImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -940,8 +860,9 @@ class _$TokenRevokedImpl implements _TokenRevoked {
   }
 }
 
-abstract class _TokenRevoked implements AuthFailure {
+abstract class _TokenRevoked extends AuthFailure {
   const factory _TokenRevoked() = _$TokenRevokedImpl;
+  const _TokenRevoked._() : super._();
 }
 
 /// @nodoc
@@ -965,22 +886,8 @@ class __$$SessionExpiredImplCopyWithImpl<$Res>
 
 /// @nodoc
 
-class _$SessionExpiredImpl implements _SessionExpired {
-  const _$SessionExpiredImpl();
-
-  @override
-  String toString() {
-    return 'AuthFailure.sessionExpired()';
-  }
-
-  @override
-  bool operator ==(Object other) {
-    return identical(this, other) ||
-        (other.runtimeType == runtimeType && other is _$SessionExpiredImpl);
-  }
-
-  @override
-  int get hashCode => runtimeType.hashCode;
+class _$SessionExpiredImpl extends _SessionExpired {
+  const _$SessionExpiredImpl() : super._();
 
   @override
   @optionalTypeArgs
@@ -1078,6 +985,7 @@ class _$SessionExpiredImpl implements _SessionExpired {
   }
 }
 
-abstract class _SessionExpired implements AuthFailure {
+abstract class _SessionExpired extends AuthFailure {
   const factory _SessionExpired() = _$SessionExpiredImpl;
+  const _SessionExpired._() : super._();
 }

@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../domain/entities/user.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 
@@ -24,6 +25,16 @@ class UserModel extends UserEntity {
       email: json['email'],
       displayName: json['displayName'],
       photoUrl: json['photoUrl'],
+    );
+  }
+
+  factory UserModel.fromSnapshot(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
+    return UserModel(
+      id: doc.id,
+      email: data['email'] ?? '',
+      displayName: data['displayName'],
+      photoUrl: data['photoUrl'],
     );
   }
 

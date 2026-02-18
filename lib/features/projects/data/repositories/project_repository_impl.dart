@@ -1,6 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../../../core/error/failures.dart';
+import '../../../../core/error/auth_failure.dart';
 import '../../domain/entities/project.dart';
 import '../../domain/repositories/project_repository.dart';
 import '../datasources/project_remote_data_source.dart';
@@ -16,7 +17,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
   Future<Either<Failure, Stream<List<Project>>>> getProjects() async {
     try {
       final user = firebaseAuth.currentUser;
-      if (user == null) return const Left(AuthFailure());
+      if (user == null) return const Left(AuthFailure.sessionExpired());
 
       final projectStream = remoteDataSource.getProjects(user.uid);
       return Right(projectStream.map((models) => models
@@ -39,7 +40,7 @@ class ProjectRepositoryImpl implements ProjectRepository {
       String name, String description) async {
     try {
       final user = firebaseAuth.currentUser;
-      if (user == null) return const Left(AuthFailure());
+      if (user == null) return const Left(AuthFailure.sessionExpired());
 
       final project =
           await remoteDataSource.createProject(name, description, user.uid);

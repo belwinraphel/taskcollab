@@ -64,24 +64,33 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     final result = await loginUser(
         LoginParams(email: event.email, password: event.password));
     result.fold(
-      (failure) => emit(
-          AuthState.error(AuthFailure.serverError())), // Simple mapping for now
-      (_) {
-        // Stream will update state
+      (failure) {
+        if (failure is AuthFailure) {
+          emit(AuthState.error(failure));
+        } else {
+          emit(const AuthState.error(AuthFailure.serverError()));
+        }
       },
+      (user) => emit(AuthState.authenticated(user)),
     );
   }
 
   Future<void> _onRegisterRequested(
       AuthRegisterRequested event, Emitter<AuthState> emit) async {
     emit(const AuthState.loading());
-    final result = await registerUser(
-        RegisterParams(email: event.email, password: event.password));
+    final result = await registerUser(RegisterParams(
+        email: event.email,
+        password: event.password,
+        displayName: event.displayName));
     result.fold(
-      (failure) => emit(AuthState.error(AuthFailure.serverError())),
-      (_) {
-        // Stream will update state
+      (failure) {
+        if (failure is AuthFailure) {
+          emit(AuthState.error(failure));
+        } else {
+          emit(const AuthState.error(AuthFailure.serverError()));
+        }
       },
+      (user) => emit(AuthState.authenticated(user)),
     );
   }
 
@@ -90,9 +99,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     emit(const AuthState.loading());
     final result = await logoutUser(NoParams());
     result.fold(
-      (failure) => emit(AuthState.error(AuthFailure.serverError())),
-      (_) => emit(const AuthState
-          .unauthenticated()), // Stream will also trigger, but this is immediate feedback
+      (failure) {
+        if (failure is AuthFailure) {
+          emit(AuthState.error(failure));
+        } else {
+          emit(const AuthState.error(AuthFailure.serverError()));
+        }
+      },
+      (_) => emit(const AuthState.unauthenticated()),
     );
   }
 

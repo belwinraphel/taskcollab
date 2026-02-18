@@ -2,14 +2,13 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../core/di/injection_container.dart';
 import '../../../../features/users/domain/entities/user.dart';
-import '../../../../features/users/presentation/bloc/users_bloc.dart';
-import '../../../../features/users/presentation/bloc/users_event.dart';
-import '../../../../features/users/presentation/bloc/users_state.dart';
 import '../../../../features/users/presentation/delegates/user_search_delegate.dart';
+import '../../../../features/users/domain/repositories/user_repository.dart';
 import '../../domain/entities/project.dart';
 import '../bloc/projects_bloc.dart';
 import '../bloc/projects_event.dart';
 import '../bloc/project_form/project_form_cubit.dart';
+import '../../../../core/utils/validators.dart';
 
 class AddEditProjectDialog extends StatelessWidget {
   final Project? project;
@@ -18,15 +17,11 @@ class AddEditProjectDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MultiBlocProvider(
-      providers: [
-        BlocProvider(
-          create: (_) => ProjectFormCubit(project: project),
-        ),
-        BlocProvider(
-          create: (_) => getIt<UsersBloc>(),
-        ),
-      ],
+    return BlocProvider(
+      create: (_) => ProjectFormCubit(
+        project: project,
+        userRepository: getIt<UserRepository>(),
+      ),
       child: _AddEditProjectDialogContent(project: project),
     );
   }
@@ -56,9 +51,7 @@ class _AddEditProjectDialogContentState
 
     // If editing, fetch existing members to populate the list
     if (widget.project != null && widget.project!.memberIds.isNotEmpty) {
-      context
-          .read<UsersBloc>()
-          .add(UsersEvent.getUsersByIds(widget.project!.memberIds));
+      context.read<ProjectFormCubit>().loadMembers(widget.project!.memberIds);
     }
   }
 
@@ -71,47 +64,32 @@ class _AddEditProjectDialogContentState
 
   @override
   Widget build(BuildContext context) {
-    // Listen to UsersBloc to populate ProjectFormCubit members on load
-    return MultiBlocListener(
-      listeners: [
-        BlocListener<UsersBloc, UsersState>(
-          listener: (context, state) {
-            state.mapOrNull(
-              loaded: (loadedState) {
-                // Populate the form cubit with loaded members
-                context.read<ProjectFormCubit>().setMembers(loadedState.users);
-              },
-            );
-          },
-        ),
-      ],
-      child: AlertDialog(
-        title: Text(widget.project != null ? 'Edit Project' : 'New Project'),
-        content: SizedBox(
-          width: double.maxFinite,
-          child: SingleChildScrollView(
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                _buildNameField(),
-                const SizedBox(height: 16),
-                _buildDescriptionField(),
-                const SizedBox(height: 16),
-                if (widget.project != null) ...[
-                  _buildMembersSection(context),
-                ],
+    return AlertDialog(
+      title: Text(widget.project != null ? 'Edit Project' : 'New Project'),
+      content: SizedBox(
+        width: double.maxFinite,
+        child: SingleChildScrollView(
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              _buildNameField(),
+              const SizedBox(height: 16),
+              _buildDescriptionField(),
+              const SizedBox(height: 16),
+              if (widget.project != null) ...[
+                _buildMembersSection(context),
               ],
-            ),
+            ],
           ),
         ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Cancel'),
-          ),
-          _buildSaveButton(context),
-        ],
       ),
+      actions: [
+        TextButton(
+          onPressed: () => Navigator.pop(context),
+          child: const Text('Cancel'),
+        ),
+        _buildSaveButton(context),
+      ],
     );
   }
 
@@ -125,14 +103,10 @@ class _AddEditProjectDialogContentState
             labelText: 'Project Name',
             border: OutlineInputBorder(),
           ),
+          autovalidateMode: AutovalidateMode.onUserInteraction,
           onChanged: (value) =>
               context.read<ProjectFormCubit>().nameChanged(value),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Please enter a name';
-            }
-            return null;
-          },
+          validator: Validators.required,
         );
       },
     );
@@ -199,6 +173,7 @@ class _AddEditProjectDialogContentState
           child: state.members.isEmpty
               ? const Center(child: Text('No members yet'))
               : ListView.builder(
+                  shrinkWrap: true,
                   itemCount: state.members.length,
                   itemBuilder: (context, index) {
                     final member = state.members[index];

@@ -17,17 +17,6 @@ void main() {
     usecase = GetProjects(mockProjectRepository);
   });
 
-  final tProjects = [
-    Project(
-      id: '1',
-      name: 'Test Project',
-      description: 'Test Description',
-      ownerId: 'user1',
-      memberIds: const ['user1'],
-      createdAt: DateTime(2023, 1, 1),
-    ),
-  ];
-
   // Fix DateTime issue by using a fixed date if needed, but Project entity uses required DateTime.
   // Mocktail needs registerFallbackValue if used in any argumentsmatcher, but here we return it.
   // Let's fix the entity instantiation.
