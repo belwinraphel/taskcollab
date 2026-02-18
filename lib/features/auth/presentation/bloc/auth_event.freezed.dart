@@ -20,7 +20,8 @@ mixin _$AuthEvent {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) =>
@@ -29,7 +30,8 @@ mixin _$AuthEvent {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) =>
@@ -38,7 +40,8 @@ mixin _$AuthEvent {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),
@@ -137,7 +140,8 @@ class _$AuthAppStartedImpl implements AuthAppStarted {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) {
@@ -149,7 +153,8 @@ class _$AuthAppStartedImpl implements AuthAppStarted {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) {
@@ -161,7 +166,8 @@ class _$AuthAppStartedImpl implements AuthAppStarted {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),
@@ -297,7 +303,8 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) {
@@ -309,7 +316,8 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) {
@@ -321,7 +329,8 @@ class _$AuthLoginRequestedImpl implements AuthLoginRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),
@@ -394,7 +403,7 @@ abstract class _$$AuthRegisterRequestedImplCopyWith<$Res> {
           $Res Function(_$AuthRegisterRequestedImpl) then) =
       __$$AuthRegisterRequestedImplCopyWithImpl<$Res>;
   @useResult
-  $Res call({String email, String password});
+  $Res call({String email, String password, String displayName});
 }
 
 /// @nodoc
@@ -412,6 +421,7 @@ class __$$AuthRegisterRequestedImplCopyWithImpl<$Res>
   $Res call({
     Object? email = null,
     Object? password = null,
+    Object? displayName = null,
   }) {
     return _then(_$AuthRegisterRequestedImpl(
       null == email
@@ -422,6 +432,10 @@ class __$$AuthRegisterRequestedImplCopyWithImpl<$Res>
           ? _value.password
           : password // ignore: cast_nullable_to_non_nullable
               as String,
+      null == displayName
+          ? _value.displayName
+          : displayName // ignore: cast_nullable_to_non_nullable
+              as String,
     ));
   }
 }
@@ -429,16 +443,19 @@ class __$$AuthRegisterRequestedImplCopyWithImpl<$Res>
 /// @nodoc
 
 class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
-  const _$AuthRegisterRequestedImpl(this.email, this.password);
+  const _$AuthRegisterRequestedImpl(
+      this.email, this.password, this.displayName);
 
   @override
   final String email;
   @override
   final String password;
+  @override
+  final String displayName;
 
   @override
   String toString() {
-    return 'AuthEvent.registerRequested(email: $email, password: $password)';
+    return 'AuthEvent.registerRequested(email: $email, password: $password, displayName: $displayName)';
   }
 
   @override
@@ -448,11 +465,13 @@ class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
             other is _$AuthRegisterRequestedImpl &&
             (identical(other.email, email) || other.email == email) &&
             (identical(other.password, password) ||
-                other.password == password));
+                other.password == password) &&
+            (identical(other.displayName, displayName) ||
+                other.displayName == displayName));
   }
 
   @override
-  int get hashCode => Object.hash(runtimeType, email, password);
+  int get hashCode => Object.hash(runtimeType, email, password, displayName);
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -468,11 +487,12 @@ class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) {
-    return registerRequested(email, password);
+    return registerRequested(email, password, displayName);
   }
 
   @override
@@ -480,11 +500,12 @@ class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) {
-    return registerRequested?.call(email, password);
+    return registerRequested?.call(email, password, displayName);
   }
 
   @override
@@ -492,13 +513,14 @@ class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),
   }) {
     if (registerRequested != null) {
-      return registerRequested(email, password);
+      return registerRequested(email, password, displayName);
     }
     return orElse();
   }
@@ -546,10 +568,12 @@ class _$AuthRegisterRequestedImpl implements AuthRegisterRequested {
 
 abstract class AuthRegisterRequested implements AuthEvent {
   const factory AuthRegisterRequested(
-      final String email, final String password) = _$AuthRegisterRequestedImpl;
+          final String email, final String password, final String displayName) =
+      _$AuthRegisterRequestedImpl;
 
   String get email;
   String get password;
+  String get displayName;
 
   /// Create a copy of AuthEvent
   /// with the given fields replaced by the non-null parameter values.
@@ -602,7 +626,8 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) {
@@ -614,7 +639,8 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) {
@@ -626,7 +652,8 @@ class _$AuthLogoutRequestedImpl implements AuthLogoutRequested {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),
@@ -753,7 +780,8 @@ class _$AuthUserChangedImpl implements AuthUserChanged {
   TResult when<TResult extends Object?>({
     required TResult Function() appStarted,
     required TResult Function(String email, String password) loginRequested,
-    required TResult Function(String email, String password) registerRequested,
+    required TResult Function(String email, String password, String displayName)
+        registerRequested,
     required TResult Function() logoutRequested,
     required TResult Function(UserEntity? user) userChanged,
   }) {
@@ -765,7 +793,8 @@ class _$AuthUserChangedImpl implements AuthUserChanged {
   TResult? whenOrNull<TResult extends Object?>({
     TResult? Function()? appStarted,
     TResult? Function(String email, String password)? loginRequested,
-    TResult? Function(String email, String password)? registerRequested,
+    TResult? Function(String email, String password, String displayName)?
+        registerRequested,
     TResult? Function()? logoutRequested,
     TResult? Function(UserEntity? user)? userChanged,
   }) {
@@ -777,7 +806,8 @@ class _$AuthUserChangedImpl implements AuthUserChanged {
   TResult maybeWhen<TResult extends Object?>({
     TResult Function()? appStarted,
     TResult Function(String email, String password)? loginRequested,
-    TResult Function(String email, String password)? registerRequested,
+    TResult Function(String email, String password, String displayName)?
+        registerRequested,
     TResult Function()? logoutRequested,
     TResult Function(UserEntity? user)? userChanged,
     required TResult orElse(),

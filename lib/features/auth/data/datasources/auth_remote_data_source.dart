@@ -6,7 +6,7 @@ import '../../../../core/error/exceptions.dart';
 abstract class AuthRemoteDataSource {
   Stream<UserModel?> get authUserStream;
   Future<UserModel> login(String email, String password);
-  Future<UserModel> register(String email, String password);
+  Future<UserModel> register(String email, String password, String displayName);
   Future<void> logout();
   Future<UserModel?> getCurrentUser();
   Future<void> updateFcmToken(String token);
@@ -67,7 +67,8 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   }
 
   @override
-  Future<UserModel> register(String email, String password) async {
+  Future<UserModel> register(
+      String email, String password, String displayName) async {
     try {
       final userCredential = await firebaseAuth.createUserWithEmailAndPassword(
         email: email,
@@ -79,16 +80,17 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
 
       final user = userCredential.user!;
 
+      // Update Firebase User Profile
+      await user.updateDisplayName(displayName);
+
       // Create user doc in Firestore
       await firestore.collection('users').doc(user.uid).set({
         'email': user.email,
-        'displayName':
-            user.displayName ?? email.split('@')[0], // Default display name
+        'displayName': displayName,
         'createdAt': FieldValue.serverTimestamp(),
         'lastLoginAt': FieldValue.serverTimestamp(),
         'email_lowercase': user.email?.toLowerCase(),
-        'displayName_lowercase':
-            (user.displayName ?? email.split('@')[0]).toLowerCase(),
+        'displayName_lowercase': displayName.toLowerCase(),
       });
 
       return UserModel.fromFirebase(user);

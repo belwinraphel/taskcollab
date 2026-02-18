@@ -8,7 +8,8 @@ class AuthEvent with _$AuthEvent {
   const factory AuthEvent.appStarted() = AuthAppStarted;
   const factory AuthEvent.loginRequested(String email, String password) =
       AuthLoginRequested;
-  const factory AuthEvent.registerRequested(String email, String password) =
+  const factory AuthEvent.registerRequested(
+          String email, String password, String displayName) =
       AuthRegisterRequested;
   const factory AuthEvent.logoutRequested() = AuthLogoutRequested;
   const factory AuthEvent.userChanged(UserEntity? user) = AuthUserChanged;

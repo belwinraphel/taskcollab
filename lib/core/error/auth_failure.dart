@@ -1,9 +1,12 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
+import 'failures.dart';
 
 part 'auth_failure.freezed.dart';
 
 @freezed
-class AuthFailure with _$AuthFailure {
+class AuthFailure extends Failure with _$AuthFailure {
+  const AuthFailure._();
+
   const factory AuthFailure.serverError() = _ServerError;
   const factory AuthFailure.emailAlreadyInUse() = _EmailAlreadyInUse;
   const factory AuthFailure.invalidEmailAndPasswordCombination() =
@@ -12,9 +15,8 @@ class AuthFailure with _$AuthFailure {
   const factory AuthFailure.userDisabled() = _UserDisabled;
   const factory AuthFailure.tokenRevoked() = _TokenRevoked;
   const factory AuthFailure.sessionExpired() = _SessionExpired;
-}
 
-extension AuthFailureX on AuthFailure {
+  @override
   String get message {
     return map(
       serverError: (_) => 'Server error occurred. Please try again.',
