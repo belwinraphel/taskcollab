@@ -5,7 +5,6 @@ import '../../../../core/usecases/usecase.dart';
 import '../entities/task.dart';
 import '../repositories/task_repository.dart';
 
-
 class CreateTask implements UseCase<TaskEntity, CreateTaskParams> {
   final TaskRepository repository;
 

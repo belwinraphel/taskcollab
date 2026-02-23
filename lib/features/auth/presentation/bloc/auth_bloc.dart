@@ -7,6 +7,7 @@ import '../../domain/usecases/get_current_user.dart';
 import '../../domain/usecases/get_auth_stream.dart';
 import '../../../../core/usecases/usecase.dart';
 import '../../../../core/error/auth_failure.dart';
+import '../../../../core/services/push_notification_service.dart';
 import 'auth_event.dart';
 import 'auth_state.dart';
 
@@ -16,6 +17,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final LogoutUser logoutUser;
   final GetCurrentUser getCurrentUser;
   final GetAuthStream getAuthStream;
+  final PushNotificationService pushNotificationService;
 
   StreamSubscription<dynamic>? _authSubscription;
 
@@ -25,6 +27,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     required this.logoutUser,
     required this.getCurrentUser,
     required this.getAuthStream,
+    required this.pushNotificationService,
   }) : super(const AuthState.initial()) {
     on<AuthAppStarted>(_onAppStarted);
     on<AuthLoginRequested>(_onLoginRequested);
@@ -48,6 +51,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       AuthUserChanged event, Emitter<AuthState> emit) async {
     if (event.user != null) {
       emit(AuthState.authenticated(event.user!));
+      pushNotificationService.registerTokenAndListen();
     } else {
       // Check if it was a manual logout vs session expiry
       // For now, if user is null, it's unauthenticated.

@@ -15,6 +15,7 @@ import '../../features/auth/domain/usecases/get_auth_stream.dart';
 import '../../features/auth/domain/usecases/login_user.dart';
 import '../../features/auth/domain/usecases/logout_user.dart';
 import '../../features/auth/domain/usecases/register_user.dart';
+import '../../features/auth/domain/usecases/update_fcm_token.dart';
 import '../../features/auth/presentation/bloc/auth_bloc.dart';
 import '../../features/projects/data/datasources/project_remote_data_source.dart';
 import '../../features/projects/data/repositories/project_repository_impl.dart';
@@ -81,6 +82,7 @@ Future<void> init() async {
   getIt.registerLazySingleton(() => LogoutUser(getIt()));
   getIt.registerLazySingleton(() => GetCurrentUser(getIt()));
   getIt.registerLazySingleton(() => GetAuthStream(getIt()));
+  getIt.registerLazySingleton(() => UpdateFcmToken(getIt()));
 
   // Bloc
   getIt.registerFactory(
@@ -90,6 +92,7 @@ Future<void> init() async {
       logoutUser: getIt(),
       getCurrentUser: getIt(),
       getAuthStream: getIt(),
+      pushNotificationService: getIt(),
     ),
   );
 
@@ -179,7 +182,10 @@ Future<void> init() async {
     () => LocalNotificationService(),
   );
   getIt.registerLazySingleton<PushNotificationService>(
-    () => PushNotificationService(authRepository: getIt()),
+    () => PushNotificationService(
+      authRepository: getIt(),
+      localNotificationService: getIt(),
+    ),
   );
   getIt.registerLazySingleton<TaskNotificationListener>(
     () => TaskNotificationListener(

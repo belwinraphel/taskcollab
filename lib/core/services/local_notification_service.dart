@@ -35,6 +35,8 @@ class LocalNotificationService implements NotificationService {
         }
       },
     );
+
+    await requestPermissions();
   }
 
   Future<void> requestPermissions() async {
@@ -46,6 +48,7 @@ class LocalNotificationService implements NotificationService {
             alert: true,
             badge: true,
             sound: true,
+            provisional: false,
           );
 
       await _flutterLocalNotificationsPlugin

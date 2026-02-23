@@ -12,6 +12,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 import '../../../profile/presentation/pages/settings_page.dart';
 import '../../../notifications/presentation/pages/notifications_page.dart';
+import '../../../../core/widgets/responsive_grid_builder.dart';
 
 class ProjectDashboardPage extends StatelessWidget {
   const ProjectDashboardPage({super.key});
@@ -46,15 +47,13 @@ class ProjectDashboardPage extends StatelessWidget {
                               constraints: const BoxConstraints(maxWidth: 1200),
                               child: Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: GridView.builder(
-                                  gridDelegate:
-                                      const SliverGridDelegateWithMaxCrossAxisExtent(
-                                    maxCrossAxisExtent: 300,
-                                    childAspectRatio: 1,
-                                    crossAxisSpacing: 16,
-                                    mainAxisSpacing: 16,
-                                  ),
+                                child: ResponsiveGridBuilder(
                                   itemCount: projects.length,
+                                  columnThresholds: {
+                                    600: 2,
+                                    900: 3,
+                                    1200: 4,
+                                  },
                                   itemBuilder: (context, index) {
                                     final project = projects[index];
                                     return ProjectGridCard(

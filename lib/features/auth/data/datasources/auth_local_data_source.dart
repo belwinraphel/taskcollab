@@ -1,7 +1,7 @@
 import 'dart:convert';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 import 'package:task_collab_app/features/auth/data/models/user_model.dart';
- import '../../../../core/error/exceptions.dart';
+import '../../../../core/error/exceptions.dart';
 
 abstract class AuthLocalDataSource {
   Future<void> cacheUser(UserModel user);
