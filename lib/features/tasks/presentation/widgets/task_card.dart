@@ -148,7 +148,7 @@ class TaskCard extends StatelessWidget {
     // Generate color based on name or id
     final color = Colors.blue;
 
-    return _buildAvatar(initials, color.withOpacity(0.2), color);
+    return _buildAvatar(initials, color.withValues(alpha: 0.2), color);
   }
 
   Widget _buildAvatar(String initials, Color bg, Color text) {

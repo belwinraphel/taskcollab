@@ -14,12 +14,14 @@ class ProjectRepositoryImpl implements ProjectRepository {
   ProjectRepositoryImpl(this.remoteDataSource, this.firebaseAuth);
 
   @override
-  Future<Either<Failure, Stream<List<Project>>>> getProjects() async {
+  Future<Either<Failure, Stream<List<Project>>>> getProjects(
+      {int limit = 50}) async {
     try {
       final user = firebaseAuth.currentUser;
       if (user == null) return const Left(AuthFailure.sessionExpired());
 
-      final projectStream = remoteDataSource.getProjects(user.uid);
+      final projectStream =
+          remoteDataSource.getProjects(user.uid, limit: limit);
       return Right(projectStream.map((models) => models
           .map((model) => Project(
                 id: model.id,

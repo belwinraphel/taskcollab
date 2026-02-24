@@ -4,8 +4,10 @@ import 'package:task_collab_app/features/tasks/domain/entities/task.dart';
 import 'package:task_collab_app/features/tasks/presentation/bloc/tasks_bloc.dart';
 import 'package:task_collab_app/features/tasks/presentation/bloc/tasks_event.dart';
 import '../kanban_column.dart';
+import '../../bloc/kanban_board/kanban_board_cubit.dart';
+import '../../bloc/kanban_board/kanban_board_state.dart';
 
-class KanbanBoardView extends StatefulWidget {
+class KanbanBoardView extends StatelessWidget {
   final List<TaskEntity> tasks;
   final Function(TaskEntity) onTaskTap;
 
@@ -16,19 +18,40 @@ class KanbanBoardView extends StatefulWidget {
   });
 
   @override
-  State<KanbanBoardView> createState() => _KanbanBoardViewState();
+  Widget build(BuildContext context) {
+    return BlocProvider(
+      create: (context) => KanbanBoardCubit(),
+      child: _KanbanBoardContent(
+        tasks: tasks,
+        onTaskTap: onTaskTap,
+      ),
+    );
+  }
 }
 
-class _KanbanBoardViewState extends State<KanbanBoardView> {
+class _KanbanBoardContent extends StatefulWidget {
+  final List<TaskEntity> tasks;
+  final Function(TaskEntity) onTaskTap;
+
+  const _KanbanBoardContent({
+    required this.tasks,
+    required this.onTaskTap,
+  });
+
+  @override
+  State<_KanbanBoardContent> createState() => _KanbanBoardContentState();
+}
+
+class _KanbanBoardContentState extends State<_KanbanBoardContent> {
   final TransformationController _transformationController =
       TransformationController();
-  double _currentScale = 0.5; // Start zoomed out at 70%
 
   @override
   void initState() {
     super.initState();
-    // Apply initial scale of 0.7
-    _transformationController.value = Matrix4.identity()..scale(_currentScale);
+    // Use read directly without context tracking in initState
+    final initialState = context.read<KanbanBoardCubit>().state;
+    _transformationController.value = initialState.matrix;
   }
 
   @override
@@ -38,40 +61,11 @@ class _KanbanBoardViewState extends State<KanbanBoardView> {
   }
 
   void _onInteractionUpdate(ScaleUpdateDetails details) {
-    setState(() {
-      _currentScale = _transformationController.value.getMaxScaleOnAxis();
-    });
-  }
-
-  void _zoomIn() {
-    setState(() {
-      _currentScale = (_currentScale + 0.1).clamp(0.5, 2.0);
-      _updateTransformationController();
-    });
-  }
-
-  void _zoomOut() {
-    setState(() {
-      _currentScale = (_currentScale - 0.1).clamp(0.5, 2.0);
-      _updateTransformationController();
-    });
-  }
-
-  void _resetZoom() {
-    setState(() {
-      _currentScale = 1.0;
-      _transformationController.value = Matrix4.identity();
-    });
-  }
-
-  void _updateTransformationController() {
-    // Keep the current translation but update the scale
-    final currentMatrix = _transformationController.value;
-    final translation = currentMatrix.getTranslation();
-
-    _transformationController.value = Matrix4.identity()
-      ..translate(translation.x, translation.y)
-      ..scale(_currentScale);
+    final maxScale = _transformationController.value.getMaxScaleOnAxis();
+    context.read<KanbanBoardCubit>().onInteractionUpdate(
+          maxScale,
+          _transformationController.value,
+        );
   }
 
   @override
@@ -117,69 +111,83 @@ class _KanbanBoardViewState extends State<KanbanBoardView> {
       ),
     ];
 
-    return Stack(
-      children: [
-        // The Board
-        InteractiveViewer(
-          transformationController: _transformationController,
-          minScale: 0.5,
-          maxScale: 2.0,
-          constrained: false, // Infinite canvas for scrolling
-          boundaryMargin: const EdgeInsets.all(double.infinity),
-          onInteractionUpdate: _onInteractionUpdate,
-          child: Padding(
-            padding: const EdgeInsets.all(16.0),
-            child: Row(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: columns,
+    return BlocListener<KanbanBoardCubit, KanbanBoardState>(
+      listenWhen: (previous, current) => previous.matrix != current.matrix,
+      listener: (context, state) {
+        if (_transformationController.value != state.matrix) {
+          _transformationController.value = state.matrix;
+        }
+      },
+      child: Stack(
+        children: [
+          // The Board
+          InteractiveViewer(
+            transformationController: _transformationController,
+            minScale: 0.5,
+            maxScale: 2.0,
+            constrained: false, // Infinite canvas for scrolling
+            boundaryMargin: const EdgeInsets.all(double.infinity),
+            onInteractionUpdate: _onInteractionUpdate,
+            child: Padding(
+              padding: const EdgeInsets.all(16.0),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: columns,
+              ),
             ),
           ),
-        ),
 
-        // Zoom Controls Overlay (Bottom Right)
-        Positioned(
-          bottom: 24,
-          left: 24,
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              _buildZoomControl(
-                icon: Icons.refresh,
-                onTap: _resetZoom,
-                tooltip: 'Reset Zoom',
-              ),
-              const SizedBox(height: 8),
-              _buildZoomControl(
-                icon: Icons.add,
-                onTap: _zoomIn,
-                tooltip: 'Zoom In',
-              ),
-              const SizedBox(height: 8),
-              Container(
-                padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
-                decoration: BoxDecoration(
-                  color: Colors.black54,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Text(
-                  '${(_currentScale * 100).toInt()}%',
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: 12,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-              const SizedBox(height: 8),
-              _buildZoomControl(
-                icon: Icons.remove,
-                onTap: _zoomOut,
-                tooltip: 'Zoom Out',
-              ),
-            ],
+          // Zoom Controls Overlay (Bottom Right)
+          Positioned(
+            bottom: 24,
+            left: 24,
+            child: BlocBuilder<KanbanBoardCubit, KanbanBoardState>(
+              buildWhen: (previous, current) => previous.scale != current.scale,
+              builder: (context, state) {
+                return Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    _buildZoomControl(
+                      icon: Icons.refresh,
+                      onTap: () => context.read<KanbanBoardCubit>().resetZoom(),
+                      tooltip: 'Reset Zoom',
+                    ),
+                    const SizedBox(height: 8),
+                    _buildZoomControl(
+                      icon: Icons.add,
+                      onTap: () => context.read<KanbanBoardCubit>().zoomIn(),
+                      tooltip: 'Zoom In',
+                    ),
+                    const SizedBox(height: 8),
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 8, vertical: 4),
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Text(
+                        '${(state.scale * 100).toInt()}%',
+                        style: const TextStyle(
+                          color: Colors.white,
+                          fontSize: 12,
+                          fontWeight: FontWeight.bold,
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    _buildZoomControl(
+                      icon: Icons.remove,
+                      onTap: () => context.read<KanbanBoardCubit>().zoomOut(),
+                      tooltip: 'Zoom Out',
+                    ),
+                  ],
+                );
+              },
+            ),
           ),
-        ),
-      ],
+        ],
+      ),
     );
   }
 

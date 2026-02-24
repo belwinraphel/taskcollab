@@ -23,11 +23,42 @@ class KanbanColumn extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final listWidget = Container(
+      decoration: BoxDecoration(
+        color: const Color(0xFFF3F4F6),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      padding: const EdgeInsets.all(8),
+      child: BlocBuilder<UsersBloc, UsersState>(
+        builder: (context, state) {
+          final users = state.maybeWhen(
+            loaded: (users) => users,
+            orElse: () => null,
+          );
+
+          return ListView.separated(
+            shrinkWrap: true,
+            physics: const NeverScrollableScrollPhysics(),
+            padding: const EdgeInsets.only(bottom: 80),
+            itemCount: tasks.length,
+            separatorBuilder: (context, index) => const SizedBox(height: 12),
+            itemBuilder: (context, index) {
+              return KanbanTaskCard(
+                task: tasks[index],
+                onTap: () => onTaskTap(tasks[index]),
+                users: users,
+              );
+            },
+          );
+        },
+      ),
+    );
+
     return DragTarget<TaskEntity>(
-      onWillAccept: (task) => task != null && task.status != status,
-      onAccept: (task) {
+      onWillAcceptWithDetails: (details) => details.data.status != status,
+      onAcceptWithDetails: (details) {
         if (onTaskDropped != null) {
-          onTaskDropped!(task);
+          onTaskDropped!(details.data);
         }
       },
       builder: (context, candidateData, rejectedData) {
@@ -36,7 +67,7 @@ class KanbanColumn extends StatelessWidget {
           margin: const EdgeInsets.symmetric(horizontal: 8),
           decoration: BoxDecoration(
             color: candidateData.isNotEmpty
-                ? _getStatusColor(status).withOpacity(0.1)
+                ? _getStatusColor(status).withValues(alpha: 0.1)
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
             border: candidateData.isNotEmpty
@@ -48,36 +79,7 @@ class KanbanColumn extends StatelessWidget {
             children: [
               _buildHeader(tasks.length),
               const SizedBox(height: 12),
-              Container(
-                decoration: BoxDecoration(
-                  color: Color(0xFFF3F4F6),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                padding: const EdgeInsets.all(8),
-                child: BlocBuilder<UsersBloc, UsersState>(
-                  builder: (context, state) {
-                    final users = state.maybeWhen(
-                      loaded: (users) => users,
-                      orElse: () => null,
-                    );
-
-                    return ListView.separated(
-                      shrinkWrap: true,
-                      padding: const EdgeInsets.only(bottom: 80),
-                      itemCount: tasks.length,
-                      separatorBuilder: (context, index) =>
-                          const SizedBox(height: 12),
-                      itemBuilder: (context, index) {
-                        return KanbanTaskCard(
-                          task: tasks[index],
-                          onTap: () => onTaskTap(tasks[index]),
-                          users: users,
-                        );
-                      },
-                    );
-                  },
-                ),
-              ),
+              listWidget,
             ],
           ),
         );

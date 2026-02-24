@@ -12,6 +12,7 @@ import '../../../auth/presentation/bloc/auth_bloc.dart';
 
 import '../../../profile/presentation/pages/settings_page.dart';
 import '../../../notifications/presentation/pages/notifications_page.dart';
+import '../../domain/entities/project.dart';
 import '../../../../core/widgets/responsive_grid_builder.dart';
 
 class ProjectDashboardPage extends StatelessWidget {
@@ -42,61 +43,7 @@ class ProjectDashboardPage extends StatelessWidget {
                           if (projects.isEmpty) {
                             return _buildEmptyState();
                           }
-                          return Center(
-                            child: ConstrainedBox(
-                              constraints: const BoxConstraints(maxWidth: 1200),
-                              child: Padding(
-                                padding: const EdgeInsets.all(16.0),
-                                child: ResponsiveGridBuilder(
-                                  itemCount: projects.length,
-                                  columnThresholds: {
-                                    600: 2,
-                                    900: 3,
-                                    1200: 4,
-                                  },
-                                  itemBuilder: (context, index) {
-                                    final project = projects[index];
-                                    return ProjectGridCard(
-                                      project: project,
-                                      onTap: () {
-                                        final projectsBloc =
-                                            context.read<ProjectsBloc>();
-                                        Navigator.of(context)
-                                            .push(MaterialPageRoute(
-                                          builder: (_) => BlocProvider.value(
-                                            value: projectsBloc,
-                                            child: ProjectTaskBoardPage(
-                                              projectId: project.id,
-                                              projectName: project.name,
-                                            ),
-                                          ),
-                                        ));
-                                      },
-                                      onEdit: () {
-                                        final bloc =
-                                            context.read<ProjectsBloc>();
-                                        showDialog(
-                                          context: context,
-                                          builder: (context) =>
-                                              BlocProvider.value(
-                                            value: bloc,
-                                            child: AddEditProjectDialog(
-                                                project: project),
-                                          ),
-                                        );
-                                      },
-                                      onDelete: () {
-                                        context.read<ProjectsBloc>().add(
-                                              ProjectsEvent.deleteProject(
-                                                  project.id),
-                                            );
-                                      },
-                                    );
-                                  },
-                                ),
-                              ),
-                            ),
-                          );
+                          return ProjectsGridView(projects: projects);
                         },
                         orElse: () => const SizedBox.shrink(),
                       );
@@ -235,6 +182,71 @@ class ProjectDashboardPage extends StatelessWidget {
             style: TextStyle(color: Colors.grey[500]),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProjectsGridView extends StatelessWidget {
+  final List<Project> projects;
+
+  const ProjectsGridView({
+    super.key,
+    required this.projects,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ResponsiveGridBuilder(
+            itemCount: projects.length,
+            cacheExtent: 500,
+            columnThresholds: {
+              600: 2,
+              900: 3,
+              1200: 4,
+            },
+            itemBuilder: (context, index) {
+              final project = projects[index];
+              return RepaintBoundary(
+                child: ProjectGridCard(
+                  project: project,
+                  onTap: () {
+                    final projectsBloc = context.read<ProjectsBloc>();
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: projectsBloc,
+                        child: ProjectTaskBoardPage(
+                          projectId: project.id,
+                          projectName: project.name,
+                        ),
+                      ),
+                    ));
+                  },
+                  onEdit: () {
+                    final bloc = context.read<ProjectsBloc>();
+                    showDialog(
+                      context: context,
+                      builder: (context) => BlocProvider.value(
+                        value: bloc,
+                        child: AddEditProjectDialog(project: project),
+                      ),
+                    );
+                  },
+                  onDelete: () {
+                    context.read<ProjectsBloc>().add(
+                          ProjectsEvent.deleteProject(project.id),
+                        );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

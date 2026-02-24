@@ -20,7 +20,7 @@ class UserRemoteDataSourceImpl implements UserRemoteDataSource {
         .collection('users')
         .orderBy('email_lowercase')
         .startAt([lowerQuery])
-        .endAt([lowerQuery + '\uf8ff'])
+        .endAt(['$lowerQuery\uf8ff'])
         .limit(20)
         .get();
 

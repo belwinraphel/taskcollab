@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
-import 'package:task_collab_app/core/usecases/usecase.dart';
 import 'package:task_collab_app/features/projects/domain/entities/project.dart';
 import 'package:task_collab_app/features/projects/domain/repositories/project_repository.dart';
 import 'package:task_collab_app/features/projects/domain/usecases/get_projects.dart';
@@ -34,13 +33,13 @@ void main() {
 
   test('should get projects from the repository', () async {
     // arrange
-    when(() => mockProjectRepository.getProjects())
+    when(() => mockProjectRepository.getProjects(limit: 50))
         .thenAnswer((_) async => Right(Stream.value(tProjectList)));
     // act
-    final result = await usecase(NoParams());
+    final result = await usecase(GetProjectsParams());
     // assert
     expect(result.fold((l) => null, (r) => r), emits(tProjectList));
-    verify(() => mockProjectRepository.getProjects());
+    verify(() => mockProjectRepository.getProjects(limit: 50));
     verifyNoMoreInteractions(mockProjectRepository);
   });
 }

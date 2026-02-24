@@ -13,6 +13,7 @@ import '../bloc/tasks_event.dart';
 import '../bloc/tasks_state.dart';
 import '../widgets/add_edit_task_dialog.dart';
 import 'package:task_collab_app/core/utils/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/di/injection_container.dart';
 
@@ -140,7 +141,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
             child: Icon(
               Icons.assignment,
               size: 80,
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
             ),
           ),
         ),
@@ -180,9 +181,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -282,7 +283,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   return Chip(
                     avatar: avatarUrl != null
                         ? CircleAvatar(
-                            backgroundImage: NetworkImage(avatarUrl),
+                            backgroundImage:
+                                CachedNetworkImageProvider(avatarUrl),
                           )
                         : CircleAvatar(
                             child: Text(
@@ -376,7 +378,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

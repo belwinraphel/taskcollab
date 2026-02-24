@@ -34,6 +34,12 @@ class ResponsiveGridBuilder extends StatelessWidget {
   /// Whether the grid should wrap its content.
   final bool shrinkWrap;
 
+  /// Viewport cache extent.
+  final double? cacheExtent;
+
+  /// Whether to add automatic keep-alives to the children.
+  final bool addAutomaticKeepAlives;
+
   const ResponsiveGridBuilder({
     super.key,
     required this.itemCount,
@@ -45,6 +51,8 @@ class ResponsiveGridBuilder extends StatelessWidget {
     this.padding,
     this.physics,
     this.shrinkWrap = false,
+    this.cacheExtent,
+    this.addAutomaticKeepAlives = true,
   });
 
   @override
@@ -57,6 +65,8 @@ class ResponsiveGridBuilder extends StatelessWidget {
           padding: padding,
           physics: physics,
           shrinkWrap: shrinkWrap,
+          cacheExtent: cacheExtent,
+          addAutomaticKeepAlives: addAutomaticKeepAlives,
           gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: crossAxisCount,
             mainAxisSpacing: mainAxisSpacing,

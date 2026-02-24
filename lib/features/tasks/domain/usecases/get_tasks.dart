@@ -13,15 +13,16 @@ class GetTasks implements UseCase<Stream<List<TaskEntity>>, GetTasksParams> {
   @override
   Future<Either<Failure, Stream<List<TaskEntity>>>> call(
       GetTasksParams params) async {
-    return await repository.getTasks(params.projectId);
+    return await repository.getTasks(params.projectId, limit: params.limit);
   }
 }
 
 class GetTasksParams extends Equatable {
   final String projectId;
+  final int limit;
 
-  const GetTasksParams({required this.projectId});
+  const GetTasksParams({required this.projectId, this.limit = 100});
 
   @override
-  List<Object> get props => [projectId];
+  List<Object> get props => [projectId, limit];
 }
