@@ -93,7 +93,7 @@ class ResponsiveGridBuilder extends StatelessWidget {
       }
       // If width is smaller than the smallest threshold, assume 1 column
       // or we could require a 0 key. For now, default to 1.
-      return 1;
+      return 2;
     }
 
     // Default breakpoints
