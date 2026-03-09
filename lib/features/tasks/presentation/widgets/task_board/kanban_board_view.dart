@@ -24,6 +24,7 @@ class KanbanBoardView extends StatelessWidget {
       child: _KanbanBoardContent(
         tasks: tasks,
         onTaskTap: onTaskTap,
+
       ),
     );
   }
@@ -49,7 +50,7 @@ class _KanbanBoardContentState extends State<_KanbanBoardContent> {
   @override
   void initState() {
     super.initState();
-    // Use read directly without context tracking in initState
+     
     final initialState = context.read<KanbanBoardCubit>().state;
     _transformationController.value = initialState.matrix;
   }
@@ -77,7 +78,7 @@ class _KanbanBoardContentState extends State<_KanbanBoardContent> {
     final doneTasks =
         widget.tasks.where((t) => t.status == TaskStatus.done).toList();
 
-    // Performance optimization: RepaintBoundary
+ 
     final columns = [
       RepaintBoundary(
         child: KanbanColumn(
@@ -102,6 +103,16 @@ class _KanbanBoardContentState extends State<_KanbanBoardContent> {
       RepaintBoundary(
         child: KanbanColumn(
           title: 'Done',
+          status: TaskStatus.done,
+          tasks: doneTasks,
+          onTaskTap: widget.onTaskTap,
+          onTaskDropped: (task) =>
+              _updateTaskStatus(context, task, TaskStatus.done),
+        ),
+      ),
+        RepaintBoundary(
+        child: KanbanColumn(
+          title: 'Testing',
           status: TaskStatus.done,
           tasks: doneTasks,
           onTaskTap: widget.onTaskTap,

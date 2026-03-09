@@ -53,11 +53,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       emit(AuthState.authenticated(event.user!));
       pushNotificationService.registerTokenAndListen();
     } else {
-      // Check if it was a manual logout vs session expiry
-      // For now, if user is null, it's unauthenticated.
-      // To really detect session expiry, we'd need more info from the stream or data source.
-      // But typically, if existing state was authenticated and now it's null without logout event, it might be expiry.
-      // For simplicity in this iteration:
+      
       emit(const AuthState.unauthenticated());
     }
   }

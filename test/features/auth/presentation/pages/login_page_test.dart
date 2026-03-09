@@ -8,8 +8,7 @@ import 'package:task_collab_app/features/auth/presentation/bloc/auth_event.dart'
 import 'package:task_collab_app/features/auth/presentation/bloc/auth_state.dart';
 import 'package:task_collab_app/features/auth/presentation/pages/login_page.dart';
 
-class MockAuthBloc extends MockBloc<AuthEvent, AuthState>
-    implements AuthBloc {}
+class MockAuthBloc extends MockBloc<AuthEvent, AuthState> implements AuthBloc {}
 
 void main() {
   late MockAuthBloc mockAuthBloc;
@@ -59,10 +58,10 @@ void main() {
     await tester.pump();
 
     verify(() => mockAuthBloc.add(
-      const AuthEvent.loginRequested(
-        'ashika@gmail.com',
-        'ashika@123',
-      ),
-    )).called(1);
+          const AuthEvent.loginRequested(
+            'ashika@gmail.com',
+            'ashika@123',
+          ),
+        )).called(1);
   });
 }

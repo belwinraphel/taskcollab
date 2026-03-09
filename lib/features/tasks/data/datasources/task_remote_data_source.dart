@@ -23,7 +23,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
         .collection('projects')
         .doc(projectId)
         .collection('tasks')
-        .orderBy('status') // Simple ordering
+        .orderBy('status')  
         .limit(limit)
         .snapshots()
         .map((snapshot) =>

@@ -16,7 +16,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
   final FirebaseFirestore firestore;
 
   AuthRemoteDataSourceImpl(this.firebaseAuth, this.firestore);
-
+  
   @override
   Stream<UserModel?> get authUserStream {
     return firebaseAuth.idTokenChanges().map((user) {
@@ -34,6 +34,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
         email: email,
         password: password,
       );
+      
       if (userCredential.user == null) {
         throw Exception('User not found');
       }
@@ -43,7 +44,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       final userDoc = await userDocRef.get();
 
       if (!userDoc.exists) {
-        // Migration: Create user doc if it doesn't exist
+ 
         await userDocRef.set({
           'email': user.email,
           'displayName': user.displayName,
@@ -76,7 +77,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDataSource {
       if (userCredential.user == null) {
         throw Exception('User creation failed');
       }
-
+      
       final user = userCredential.user!;
 
       // Update Firebase User Profile
