@@ -4,7 +4,7 @@ import '../models/task_model.dart';
 // Needed for TaskStatus enum maybe? No, derived from model.
 
 abstract class TaskRemoteDataSource {
-  Stream<List<TaskModel>> getTasks(String projectId);
+  Stream<List<TaskModel>> getTasks(String projectId, {int limit = 100});
   Stream<QuerySnapshot<Map<String, dynamic>>> getTaskSnapshots(
       String projectId);
   Future<TaskModel> createTask(TaskModel task);
@@ -18,12 +18,13 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   TaskRemoteDataSourceImpl(this.firestore);
 
   @override
-  Stream<List<TaskModel>> getTasks(String projectId) {
+  Stream<List<TaskModel>> getTasks(String projectId, {int limit = 100}) {
     return firestore
         .collection('projects')
         .doc(projectId)
         .collection('tasks')
-        .orderBy('status') // Simple ordering
+        .orderBy('status')  
+        .limit(limit)
         .snapshots()
         .map((snapshot) =>
             snapshot.docs.map((doc) => TaskModel.fromFirestore(doc)).toList());

@@ -82,24 +82,27 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 40),
 
                     // Login/Register Card
-                    Card(
-                      elevation: 8,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(32.0),
-                        child: AnimatedSwitcher(
-                          duration: const Duration(milliseconds: 300),
-                          child: _isLogin
-                              ? LoginForm(
-                                  key: const ValueKey('LoginForm'),
-                                  onToggleView: _toggleView,
-                                )
-                              : RegisterForm(
-                                  key: const ValueKey('RegisterForm'),
-                                  onToggleView: _toggleView,
-                                ),
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(maxWidth: 400),
+                      child: Card(
+                        elevation: 8,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(20),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.all(32.0),
+                          child: AnimatedSwitcher(
+                            duration: const Duration(milliseconds: 300),
+                            child: _isLogin
+                                ? LoginForm(
+                                    key: const ValueKey('LoginForm'),
+                                    onToggleView: _toggleView,
+                                  )
+                                : RegisterForm(
+                                    key: const ValueKey('RegisterForm'),
+                                    onToggleView: _toggleView,
+                                  ),
+                          ),
                         ),
                       ),
                     ),

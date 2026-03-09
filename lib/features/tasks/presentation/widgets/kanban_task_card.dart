@@ -4,6 +4,7 @@ import '../../domain/entities/task.dart';
 import 'package:task_collab_app/core/utils/constants.dart';
 
 import 'package:intl/intl.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class KanbanTaskCard extends StatelessWidget {
   final TaskEntity task;
@@ -125,7 +126,8 @@ class KanbanTaskCard extends StatelessWidget {
 
   Widget _buildAvatars() {
     if (task.assignees.isEmpty) {
-      return _buildAvatar('UN', Colors.grey.withOpacity(0.2), Colors.grey);
+      return _buildAvatar(
+          'UN', Colors.grey.withValues(alpha: 0.2), Colors.grey);
     }
 
     return SizedBox(
@@ -166,7 +168,7 @@ class KanbanTaskCard extends StatelessWidget {
     if (avatarUrl != null) {
       return CircleAvatar(
         radius: 14,
-        backgroundImage: NetworkImage(avatarUrl),
+        backgroundImage: CachedNetworkImageProvider(avatarUrl),
       );
     }
 
@@ -174,7 +176,7 @@ class KanbanTaskCard extends StatelessWidget {
         ? displayName[0].toUpperCase()
         : '?';
     final color = _generateColor(assignee.id);
-    return _buildAvatar(initials, color.withOpacity(0.2), color);
+    return _buildAvatar(initials, color.withValues(alpha: 0.2), color);
   }
 
   Widget _buildRemainingCount(int count) {

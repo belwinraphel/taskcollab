@@ -13,6 +13,7 @@ import '../bloc/tasks_event.dart';
 import '../bloc/tasks_state.dart';
 import '../widgets/add_edit_task_dialog.dart';
 import 'package:task_collab_app/core/utils/constants.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 import '../../../../core/di/injection_container.dart';
 
@@ -72,22 +73,27 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
             slivers: [
               _buildSliverAppBar(context, currentTask),
               SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      _buildStatusAndPriority(currentTask),
-                      const SizedBox(height: 24),
-                      _buildDescriptionSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildAssigneesSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildDateSection(currentTask),
-                      const SizedBox(height: 24),
-                      _buildCommentsSection(currentTask),
-                      const SizedBox(height: 80), // Bottom padding for FAB
-                    ],
+                child: Center(
+                  child: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 800),
+                    child: Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          _buildStatusAndPriority(currentTask),
+                          const SizedBox(height: 24),
+                          _buildDescriptionSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildAssigneesSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildDateSection(currentTask),
+                          const SizedBox(height: 24),
+                          _buildCommentsSection(currentTask),
+                          const SizedBox(height: 80), // Bottom padding for FAB
+                        ],
+                      ),
+                    ),
                   ),
                 ),
               ),
@@ -135,7 +141,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
             child: Icon(
               Icons.assignment,
               size: 80,
-              color: Colors.white.withOpacity(0.2),
+              color: Colors.white.withValues(alpha: 0.2),
             ),
           ),
         ),
@@ -175,9 +181,9 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
       decoration: BoxDecoration(
-        color: color.withOpacity(0.1),
+        color: color.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
-        border: Border.all(color: color.withOpacity(0.5)),
+        border: Border.all(color: color.withValues(alpha: 0.5)),
       ),
       child: Row(
         mainAxisSize: MainAxisSize.min,
@@ -277,7 +283,8 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                   return Chip(
                     avatar: avatarUrl != null
                         ? CircleAvatar(
-                            backgroundImage: NetworkImage(avatarUrl),
+                            backgroundImage:
+                                CachedNetworkImageProvider(avatarUrl),
                           )
                         : CircleAvatar(
                             child: Text(
@@ -371,7 +378,7 @@ class _TaskDetailsPageState extends State<TaskDetailsPage> {
                     border: Border.all(color: Colors.grey.shade200),
                     boxShadow: [
                       BoxShadow(
-                        color: Colors.black.withOpacity(0.02),
+                        color: Colors.black.withValues(alpha: 0.02),
                         blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),

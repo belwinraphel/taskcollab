@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../../core/usecases/usecase.dart';
 import '../../domain/usecases/create_project.dart';
 import '../../domain/usecases/delete_project.dart';
 import '../../domain/usecases/get_projects.dart';
@@ -28,11 +27,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
 
   Future<void> _onAddMember(
       ProjectsAddMember event, Emitter<ProjectsState> emit) async {
-    // We need the current project to update it.
-    // Ideally, the UI passes the project, or we fetch it.
-    // For simplicity, let's assume the UI might pass the project or we rely on the stream update.
-    // BUT the event only has projectId.
-    // Let's check if we have the project in the current state.
+     
 
     final currentState = state;
     if (currentState is! ProjectsLoaded) {
@@ -59,7 +54,7 @@ class ProjectsBloc extends Bloc<ProjectsEvent, ProjectsState> {
   Future<void> _onStarted(
       ProjectsStarted event, Emitter<ProjectsState> emit) async {
     emit(const ProjectsState.loading());
-    final result = await getProjects(NoParams());
+    final result = await getProjects(GetProjectsParams());
     await result.fold(
       (failure) async => emit(ProjectsState.error(failure.message)),
       (stream) async {

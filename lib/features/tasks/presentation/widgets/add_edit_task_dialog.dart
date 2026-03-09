@@ -181,7 +181,7 @@ class _AddEditTaskDialogContentState extends State<_AddEditTaskDialogContent> {
       buildWhen: (previous, current) => previous.priority != current.priority,
       builder: (context, state) {
         return DropdownButtonFormField<TaskPriority>(
-          value: state.priority,
+          initialValue: state.priority,
           decoration: const InputDecoration(labelText: 'Priority'),
           items: TaskPriority.values.map((priority) {
             return DropdownMenuItem(
@@ -262,6 +262,7 @@ class _AddEditTaskDialogContentState extends State<_AddEditTaskDialogContent> {
                   lastDate: DateTime.now().add(const Duration(days: 365)),
                 );
                 if (picked != null) {
+                  if (!context.mounted) return;
                   context.read<TaskFormCubit>().dueDateChanged(picked);
                 }
               },

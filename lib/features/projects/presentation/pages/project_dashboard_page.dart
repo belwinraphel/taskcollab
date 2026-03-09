@@ -9,9 +9,11 @@ import '../bloc/projects_state.dart';
 import '../widgets/add_edit_project_dialog.dart';
 import '../widgets/project_grid_card.dart';
 import '../../../auth/presentation/bloc/auth_bloc.dart';
-import '../../../auth/presentation/bloc/auth_state.dart';
+
 import '../../../profile/presentation/pages/settings_page.dart';
 import '../../../notifications/presentation/pages/notifications_page.dart';
+import '../../domain/entities/project.dart';
+import '../../../../core/widgets/responsive_grid_builder.dart';
 
 class ProjectDashboardPage extends StatelessWidget {
   const ProjectDashboardPage({super.key});
@@ -41,56 +43,7 @@ class ProjectDashboardPage extends StatelessWidget {
                           if (projects.isEmpty) {
                             return _buildEmptyState();
                           }
-                          return Padding(
-                            padding: const EdgeInsets.all(16.0),
-                            child: GridView.builder(
-                              gridDelegate:
-                                  const SliverGridDelegateWithMaxCrossAxisExtent(
-                                maxCrossAxisExtent: 300,
-                                childAspectRatio: 1,
-                                crossAxisSpacing: 16,
-                                mainAxisSpacing: 16,
-                              ),
-                              itemCount: projects.length,
-                              itemBuilder: (context, index) {
-                                final project = projects[index];
-                                return ProjectGridCard(
-                                  project: project,
-                                  onTap: () {
-                                    final projectsBloc =
-                                        context.read<ProjectsBloc>();
-                                    Navigator.of(context)
-                                        .push(MaterialPageRoute(
-                                      builder: (_) => BlocProvider.value(
-                                        value: projectsBloc,
-                                        child: ProjectTaskBoardPage(
-                                          projectId: project.id,
-                                          projectName: project.name,
-                                        ),
-                                      ),
-                                    ));
-                                  },
-                                  onEdit: () {
-                                    final bloc = context.read<ProjectsBloc>();
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => BlocProvider.value(
-                                        value: bloc,
-                                        child: AddEditProjectDialog(
-                                            project: project),
-                                      ),
-                                    );
-                                  },
-                                  onDelete: () {
-                                    context.read<ProjectsBloc>().add(
-                                          ProjectsEvent.deleteProject(
-                                              project.id),
-                                        );
-                                  },
-                                );
-                              },
-                            ),
-                          );
+                          return ProjectsGridView(projects: projects);
                         },
                         orElse: () => const SizedBox.shrink(),
                       );
@@ -170,35 +123,40 @@ class ProjectDashboardPage extends StatelessWidget {
     return Container(
       color: Colors.white,
       padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 12.0),
-      child: Row(
-        children: [
-          Expanded(
-            child: TextField(
-              decoration: InputDecoration(
-                hintText: 'Search projects...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                filled: true,
-                fillColor: const Color(0xFFF3F4F6),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide.none,
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 1200),
+          child: Row(
+            children: [
+              Expanded(
+                child: TextField(
+                  decoration: InputDecoration(
+                    hintText: 'Search projects...',
+                    prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                    filled: true,
+                    fillColor: const Color(0xFFF3F4F6),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(12),
+                      borderSide: BorderSide.none,
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  ),
                 ),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
               ),
-            ),
+              const SizedBox(width: 12),
+              Container(
+                decoration: BoxDecoration(
+                  color: const Color(0xFFF3F4F6),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: IconButton(
+                  icon: const Icon(Icons.filter_list, color: Colors.grey),
+                  onPressed: () {},
+                ),
+              ),
+            ],
           ),
-          const SizedBox(width: 12),
-          Container(
-            decoration: BoxDecoration(
-              color: const Color(0xFFF3F4F6),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: IconButton(
-              icon: const Icon(Icons.filter_list, color: Colors.grey),
-              onPressed: () {},
-            ),
-          ),
-        ],
+        ),
       ),
     );
   }
@@ -224,6 +182,71 @@ class ProjectDashboardPage extends StatelessWidget {
             style: TextStyle(color: Colors.grey[500]),
           ),
         ],
+      ),
+    );
+  }
+}
+
+class ProjectsGridView extends StatelessWidget {
+  final List<Project> projects;
+
+  const ProjectsGridView({
+    super.key,
+    required this.projects,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return Center(
+      child: ConstrainedBox(
+        constraints: const BoxConstraints(maxWidth: 1200),
+        child: Padding(
+          padding: const EdgeInsets.all(16.0),
+          child: ResponsiveGridBuilder(
+            itemCount: projects.length,
+            cacheExtent: 500,
+            columnThresholds: {
+              600: 2,
+              900: 3,
+              1200: 4,
+            },
+            itemBuilder: (context, index) {
+              final project = projects[index];
+              return RepaintBoundary(
+                child: ProjectGridCard(
+                  project: project,
+                  onTap: () {
+                    final projectsBloc = context.read<ProjectsBloc>();
+                    Navigator.of(context).push(MaterialPageRoute(
+                      builder: (_) => BlocProvider.value(
+                        value: projectsBloc,
+                        child: ProjectTaskBoardPage(
+                          projectId: project.id,
+                          projectName: project.name,
+                        ),
+                      ),
+                    ));
+                  },
+                  onEdit: () {
+                    final bloc = context.read<ProjectsBloc>();
+                    showDialog(
+                      context: context,
+                      builder: (context) => BlocProvider.value(
+                        value: bloc,
+                        child: AddEditProjectDialog(project: project),
+                      ),
+                    );
+                  },
+                  onDelete: () {
+                    context.read<ProjectsBloc>().add(
+                          ProjectsEvent.deleteProject(project.id),
+                        );
+                  },
+                ),
+              );
+            },
+          ),
+        ),
       ),
     );
   }

@@ -23,7 +23,7 @@ class OverviewSummaryCard extends StatelessWidget {
   Widget build(BuildContext context) {
     return DragTarget<TaskEntity>(
       onWillAcceptWithDetails: (details) =>
-          true, // Accept all for now, logic can be refined
+          true,  
       onAcceptWithDetails: (details) {
         if (onTaskDropped != null) {
           onTaskDropped!(details.data);
@@ -34,8 +34,8 @@ class OverviewSummaryCard extends StatelessWidget {
         return Card(
           elevation: isSelected || isHovering ? 4 : 1,
           shadowColor: isSelected || isHovering
-              ? statusColor.withOpacity(0.4)
-              : Colors.black12, // ignoring deprecation
+              ? statusColor.withValues(alpha: 0.4)
+              : Colors.black12,
           margin: const EdgeInsets.only(bottom: 12, right: 16, left: 8),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

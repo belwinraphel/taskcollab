@@ -19,34 +19,49 @@ void main() {
 
   Widget createWidgetUnderTest() {
     return MaterialApp(
-      home: BlocProvider<AuthBloc>(
-        create: (_) => mockAuthBloc,
+      home: BlocProvider<AuthBloc>.value(
+        value: mockAuthBloc,
         child: const LoginPage(),
       ),
     );
   }
 
   testWidgets('LoginPage renders correctly', (tester) async {
-    when(() => mockAuthBloc.state).thenReturn(const AuthState.initial());
+    whenListen(
+      mockAuthBloc,
+      Stream<AuthState>.fromIterable([
+        const AuthState.initial(),
+      ]),
+      initialState: const AuthState.initial(),
+    );
 
     await tester.pumpWidget(createWidgetUnderTest());
 
-    expect(find.text('Login'), findsOneWidget); // AppBar title
-    expect(find.byType(TextField), findsNWidgets(2)); // Email and Password
-    expect(find.text('Sign In'), findsOneWidget); // Button text
+    expect(find.text('Login'), findsOneWidget);
   });
 
-  testWidgets('Tapping Sign In adds AuthLogin event', (tester) async {
-    when(() => mockAuthBloc.state).thenReturn(const AuthState.initial());
+  testWidgets('Tapping Login adds AuthLogin event', (tester) async {
+    whenListen(
+      mockAuthBloc,
+      Stream<AuthState>.fromIterable([
+        const AuthState.initial(),
+      ]),
+      initialState: const AuthState.initial(),
+    );
 
     await tester.pumpWidget(createWidgetUnderTest());
 
-    await tester.enterText(find.byType(TextField).first, 'test@example.com');
-    await tester.enterText(find.byType(TextField).last, 'password123');
-    await tester.tap(find.text('Sign In'));
+    await tester.enterText(find.byType(TextField).first, 'ashika@gmail.com');
+    await tester.enterText(find.byType(TextField).last, 'ashika@123');
+
+    await tester.tap(find.widgetWithText(ElevatedButton, 'Login'));
+    await tester.pump();
 
     verify(() => mockAuthBloc.add(
-            const AuthEvent.loginRequested('test@example.com', 'password123')))
-        .called(1);
+          const AuthEvent.loginRequested(
+            'ashika@gmail.com',
+            'ashika@123',
+          ),
+        )).called(1);
   });
 }

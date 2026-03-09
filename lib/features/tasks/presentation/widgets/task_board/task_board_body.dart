@@ -10,7 +10,6 @@ import '../../../../users/presentation/bloc/users_bloc.dart';
 import '../../../../users/presentation/bloc/users_event.dart';
 import '../../../../projects/presentation/bloc/projects_bloc.dart';
 import '../../../../projects/presentation/bloc/projects_event.dart';
-import '../add_edit_task_dialog.dart';
 import 'task_board_header.dart';
 import 'task_list_view.dart';
 
@@ -24,7 +23,7 @@ class TaskBoardBody extends StatefulWidget {
 }
 
 class _TaskBoardBodyState extends State<TaskBoardBody> {
-  TaskStatus _selectedStatus = TaskStatus.inProgress; // Default to Active
+  final TaskStatus _selectedStatus = TaskStatus.inProgress; // Default to Active
 
   @override
   void initState() {
@@ -67,14 +66,6 @@ class _TaskBoardBodyState extends State<TaskBoardBody> {
                     Center(child: Text('Error: ${state.message}')),
                 loaded: (state) {
                   final tasks = state.tasks;
-                  final todoCount =
-                      tasks.where((t) => t.status == TaskStatus.todo).length;
-                  final activeCount = tasks
-                      .where((t) => t.status == TaskStatus.inProgress)
-                      .length;
-                  final doneCount =
-                      tasks.where((t) => t.status == TaskStatus.done).length;
-
                   final filteredTasks =
                       tasks.where((t) => t.status == _selectedStatus).toList();
 
@@ -205,23 +196,6 @@ class _TaskBoardBodyState extends State<TaskBoardBody> {
           ],
           child: TaskDetailsPage(task: task),
         ),
-      ),
-    );
-  }
-
-  void _showAddTaskDialog(BuildContext context) {
-    showDialog(
-      context: context,
-      builder: (_) => MultiBlocProvider(
-        providers: [
-          BlocProvider.value(value: context.read<TasksBloc>()),
-          BlocProvider.value(value: context.read<UsersBloc>()),
-          BlocProvider(
-            create: (_) =>
-                getIt<ProjectsBloc>()..add(const ProjectsEvent.started()),
-          ),
-        ],
-        child: AddEditTaskDialog(projectId: widget.projectId),
       ),
     );
   }

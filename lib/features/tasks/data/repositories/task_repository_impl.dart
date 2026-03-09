@@ -11,10 +11,10 @@ class TaskRepositoryImpl implements TaskRepository {
   TaskRepositoryImpl(this.remoteDataSource);
 
   @override
-  Future<Either<Failure, Stream<List<TaskEntity>>>> getTasks(
-      String projectId) async {
+  Future<Either<Failure, Stream<List<TaskEntity>>>> getTasks(String projectId,
+      {int limit = 100}) async {
     try {
-      final stream = remoteDataSource.getTasks(projectId);
+      final stream = remoteDataSource.getTasks(projectId, limit: limit);
       return Right(stream);
     } catch (e) {
       return Left(ServerFailure(e.toString()));

@@ -1,5 +1,4 @@
 import 'package:freezed_annotation/freezed_annotation.dart';
-import '../../domain/entities/user.dart';
 
 part 'users_event.freezed.dart';
 

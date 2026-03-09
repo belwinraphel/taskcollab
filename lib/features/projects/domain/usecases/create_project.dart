@@ -5,7 +5,6 @@ import '../../../../core/usecases/usecase.dart';
 import '../entities/project.dart';
 import '../repositories/project_repository.dart';
 
-
 class CreateProject implements UseCase<Project, CreateProjectParams> {
   final ProjectRepository repository;
 
