@@ -25,6 +25,7 @@ class _LoginPageState extends State<LoginPage> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return Scaffold(
       body: BlocConsumer<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -47,14 +48,14 @@ class _LoginPageState extends State<LoginPage> {
           );
         },
         builder: (context, state) {
-          return Container(
+          return DecoratedBox(
             decoration: BoxDecoration(
-              gradient: LinearGradient(
+              gradient: const LinearGradient(
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
-                colors: [
-                  Colors.blue.shade800,
-                  Colors.blue.shade500,
+                colors: <Color>[
+                  Color.fromARGB(255, 21, 101, 192),
+                  Color.fromARGB(255, 13, 71, 161),
                 ],
               ),
             ),
@@ -73,35 +74,44 @@ class _LoginPageState extends State<LoginPage> {
                     const SizedBox(height: 16),
                     Text(
                       'Task Collab',
-                      style:
-                          Theme.of(context).textTheme.headlineMedium?.copyWith(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                              ),
+                      style: textTheme.headlineMedium?.copyWith(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
                     const SizedBox(height: 40),
 
                     // Login/Register Card
                     ConstrainedBox(
                       constraints: const BoxConstraints(maxWidth: 400),
-                      child: Card(
-                        elevation: 8,
-                        shape: RoundedRectangleBorder(
+                      child: RepaintBoundary(
+                        child: ClipRRect(
                           borderRadius: BorderRadius.circular(20),
-                        ),
-                        child: Padding(
-                          padding: const EdgeInsets.all(32.0),
-                          child: AnimatedSwitcher(
-                            duration: const Duration(milliseconds: 300),
-                            child: _isLogin
-                                ? LoginForm(
-                                    key: const ValueKey('LoginForm'),
-                                    onToggleView: _toggleView,
-                                  )
-                                : RegisterForm(
-                                    key: const ValueKey('RegisterForm'),
-                                    onToggleView: _toggleView,
-                                  ),
+                          child: DecoratedBox(
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(32.0),
+                              child: AnimatedSwitcher(
+                                transitionBuilder: (child, animation) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
+                                duration: const Duration(milliseconds: 300),
+                                child: _isLogin
+                                    ? LoginForm(
+                                        key: const ValueKey('LoginForm'),
+                                        onToggleView: _toggleView,
+                                      )
+                                    : RegisterForm(
+                                        key: const ValueKey('RegisterForm'),
+                                        onToggleView: _toggleView,
+                                      ),
+                              ),
+                            ),
                           ),
                         ),
                       ),

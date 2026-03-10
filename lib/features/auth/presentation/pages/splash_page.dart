@@ -46,7 +46,14 @@ class SplashPage extends StatelessWidget {
           );
         },
         child: const Center(
-          child: CircularProgressIndicator(),
+          child: SizedBox(
+            width: 30,
+            height: 30,
+            child: RepaintBoundary(
+                child: CircularProgressIndicator(
+              strokeWidth: 2,
+            )),
+          ),
         ),
       ),
     );

@@ -37,7 +37,10 @@ class _LoginFormState extends State<LoginForm> {
 
   @override
   Widget build(BuildContext context) {
+    final textTheme = Theme.of(context).textTheme;
     return BlocBuilder<AuthBloc, AuthState>(
+      buildWhen: (previous, current) =>
+          previous.runtimeType != current.runtimeType,
       builder: (context, state) {
         final isLoading = state is AuthLoading;
 
@@ -48,10 +51,10 @@ class _LoginFormState extends State<LoginForm> {
             children: [
               Text(
                 'Welcome Back!',
-                style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black87,
-                    ),
+                style: textTheme.headlineSmall?.copyWith(
+                  fontWeight: FontWeight.bold,
+                  color: Colors.black87,
+                ),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 32),
@@ -103,7 +106,7 @@ class _LoginFormState extends State<LoginForm> {
                     ),
                     backgroundColor: Colors.blueAccent,
                     foregroundColor: Colors.white,
-                    elevation: 2,
+                    elevation: 0,
                   ),
                   child: const Text(
                     'Login',
@@ -124,7 +127,7 @@ class _LoginFormState extends State<LoginForm> {
                       TextSpan(
                         text: 'Sign Up',
                         style: TextStyle(
-                          color: Colors.blueAccent,
+                          color: Color.fromARGB(255, 68, 138, 255),
                           fontWeight: FontWeight.bold,
                         ),
                       ),
